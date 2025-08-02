@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tonalidades dos Hinos da CCB</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .question {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            font-weight: bold;
+            color: #34495e;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        button {
+            padding: 12px;
+            font-size: 1.1em;
+            cursor: pointer;
+            background-color: #ecf0f1;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background-color: #d6eaf8;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .result {
+            font-size: 1.2em;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        .next-btn {
+            background-color: #3498db;
+            color: white;
+            margin-top: 20px;
+            font-weight: bold;
+            border: none;
+        }
+        .next-btn:hover {
+            background-color: #2980b9;
+        }
+        .stats {
+            margin-top: 25px;
+            padding: 12px;
+            background-color: #e8f4f8;
+            border-radius: 8px;
+            font-size: 1.1em;
+            border: 1px solid #d1e7f0;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            gap: 10px;
+        }
+        .help-btn {
+            background-color: #f39c12;
+            color: white;
+            font-weight: bold;
+            border: none;
+        }
+        .exit-btn {
+            background-color: #e74c3c;
+            color: white;
+            font-weight: bold;
+            border: none;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 25px;
+            border: 1px solid #888;
+            width: 85%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: black;
+        }
+        .armadura {
+            font-weight: bold;
+            color: #2980b9;
+            margin-top: 5px;
+        }
+        .progress-container {
+            margin-top: 20px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .progress-bar {
+            height: 20px;
+            background-color: #3498db;
+            border-radius: 3px;
+            transition: width 0.5s;
+        }
+        .difficulty-selector {
+            margin: 15px 0;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #bdc3c7;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tonalidades dos Hinos da CCB</h1>
+    <div id="quiz-container">
+        <!-- Substituição do seletor de dificuldade pelo de instrumentos -->
+        <select id="instrument" class="difficulty-selector">
+            <option value="C">Hinario em Dó Maior</option>
+            <option value="Bb">Hinario em Si Bemol Maior</option>
+            <option value="Eb">Hinario em Mi Bemol Maior</option>
+        </select>
+        
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <div id="result"></div>
+        <div id="armadura" class="armadura"></div>
+        <button id="next-btn" class="next-btn" style="display: none;">Próxima Pergunta</button>
+        
+        <div class="stats" id="stats">
+            Perguntas: 0 | Acertos: 0 | Erros: 0
+        </div>
+        
+        <div class="progress-container">
+            <div>Progresso: <span id="progress">0</span>%</div>
+            <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+        </div>
+        
+        <div class="action-buttons">
+            <button id="help-btn" class="help-btn">Ajuda</button>
+            <button id="exit-btn" class="exit-btn">Encerrar</button>
+        </div>
+    </div>
+
+    <!-- Modal de Ajuda -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Ajuda - Tonalidades Musicais</h2>
+            <p><strong>DÓ MAIOR</strong>: Armadura sem acidentes (Nenhum sustenido ou bemol)</p>
+            <p><strong>SOL MAIOR</strong>: Armadura com Fá#</p>
+            <p><strong>RÉ MAIOR</strong>: Armadura com Fá# e Dó#</p>
+            <p><strong>LÁ MAIOR</strong>: Armadura com Fá#, Dó# e Sol#</p>
+            <p><strong>MI MAIOR</strong>: Armadura com Fá#, Dó#, Sol# e Ré#</p>
+            <p><strong>SI MAIOR</strong>: Armadura com Fá#, Dó#, Sol#, Ré# e Lá#</p>
+            <p><strong>FÁ MAIOR</strong>: Armadura com Sib</p>
+            <p><strong>SI BEMOL MAIOR</strong>: Armadura com Sib e Mib</p>
+            <p><strong>MI BEMOL MAIOR</strong>: Armadura com Sib, Mib e Láb</p>
+            <p><strong>LÁ BEMOL MAIOR</strong>: Armadura com Sib, Mib, Láb e Réb</p>
+            <p><strong>RÉ BEMOL MAIOR</strong>: Armadura com Sib, Mib, Láb, Réb e Solb</p>
+        </div>
+    </div>
+
+    <!-- Modal de Encerramento -->
+    <div id="exit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Resultados do Quiz</h2>
+            <div id="exit-stats"></div>
+            <div id="tonalidades-stats" style="margin-top: 20px;"></div>
+            <p>Obrigado por praticar!</p>
+            <button id="restart-btn" class="next-btn" style="margin-top: 20px;">Reiniciar Quiz</button>
+            <button id="confirm-exit" class="exit-btn" style="margin-top: 10px;">Fechar Página</button>
+        </div>
+    </div>
+
+    <script>
+// Elementos da página
+const questionElement = document.getElementById('question');
+const optionsElement = document.getElementById('options');
+const resultElement = document.getElementById('result');
+const armaduraElement = document.getElementById('armadura');
+const nextButton = document.getElementById('next-btn');
+const statsElement = document.getElementById('stats');
+const progressElement = document.getElementById('progress');
+const progressBar = document.getElementById('progress-bar');
+const helpButton = document.getElementById('help-btn');
+const exitButton = document.getElementById('exit-btn');
+const restartButton = document.getElementById('restart-btn');
+const instrumentSelector = document.getElementById('instrument');
+const helpModal = document.getElementById('help-modal');
+const exitModal = document.getElementById('exit-modal');
+const exitStatsElement = document.getElementById('exit-stats');
+const tonalidadesStatsElement = document.getElementById('tonalidades-stats');
+const confirmExitButton = document.getElementById('confirm-exit');
+const closeButtons = document.getElementsByClassName('close');
+
+// Variáveis do quiz
+let currentHino;
+let correctAnswer;
+let totalQuestions = 0;
+let correctAnswers = 0;
+let wrongAnswers = 0;
+let currentIndex = 0;
+let hinoSequence = [];
+let answeredTonalidades = {};
+
+// Banco de dados original dos hinos em Dó Maior
+const hinosDB = {
+    hinos: {
+                "1": "MI BEMOL MAIOR",
+                "2": "MI BEMOL MAIOR",
+                "3": "SOL MAIOR",
+                "4": "LÁ BEMOL MAIOR",
+                "5": "LÁ BEMOL MAIOR",
+                "6": "DÓ MAIOR",
+                "7": "MI BEMOL MAIOR",
+                "8": "SI BEMOL MAIOR",
+                "9": "SOL MAIOR",
+                "10": "SI BEMOL MAIOR",
+                "11": "SI BEMOL MAIOR",
+                "12": "MI BEMOL MAIOR",
+                "13": "LÁ BEMOL MAIOR",
+                "14": "FÁ MAIOR",
+                "15": "SI BEMOL MAIOR",
+                "16": "SOL MAIOR",
+                "17": "SOL MAIOR",
+                "18": "SOL MAIOR",
+                "19": "LÁ BEMOL MAIOR",
+                "20": "FÁ MAIOR",
+                "21": "MI BEMOL MAIOR",
+                "22": "LÁ MAIOR",
+                "23": "SOL MAIOR",
+                "24": "SOL MAIOR",
+                "25": "SOL MAIOR",
+                "26": "LÁ BEMOL MAIOR",
+                "27": "MI BEMOL MAIOR",
+                "28": "DÓ MAIOR",
+                "29": "LÁ BEMOL MAIOR",
+                "30": "FÁ MAIOR",
+                "31": "RÉ MAIOR",
+                "32": "LÁ BEMOL MAIOR",
+                "33": "DÓ MAIOR",
+                "34": "MI BEMOL MAIOR",
+                "35": "MI BEMOL MAIOR",
+                "36": "SOL MAIOR",
+                "37": "RÉ MAIOR",
+                "38": "MI BEMOL MAIOR",
+                "39": "FÁ MAIOR",
+                "40": "LÁ BEMOL MAIOR",
+                "41": "LÁ MAIOR",
+                "42": "FÁ MAIOR",
+                "43": "MI BEMOL MAIOR",
+                "44": "FÁ MAIOR",
+                "45": "DÓ MAIOR",
+                "46": "LÁ BEMOL MAIOR",
+                "47": "FÁ MAIOR",
+                "48": "MI BEMOL MAIOR",
+                "49": "FÁ MAIOR",
+                "50": "DÓ MAIOR",
+                "51": "SI BEMOL MAIOR",
+                "52": "DÓ MAIOR",
+                "53": "MI BEMOL MAIOR",
+                "54": "FÁ MAIOR",
+                "55": "DÓ MAIOR",
+                "56": "MI BEMOL MAIOR",
+                "57": "RÉ BEMOL MAIOR",
+                "58": "RÉ MAIOR",
+                "59": "FÁ MAIOR",
+                "60": "FÁ MAIOR",
+                "61": "MI BEMOL MAIOR",
+                "62": "LÁ BEMOL MAIOR",
+                "63": "SI BEMOL MAIOR",
+                "64": "FÁ MAIOR",
+                "65": "RÉ BEMOL MAIOR",
+                "66": "SOL MAIOR",
+                "67": "RÉ BEMOL MAIOR",
+                "68": "RÉ MAIOR",
+                "69": "RÉ BEMOL MAIOR",
+                "70": "SOL MAIOR",
+                "71": "DÓ MAIOR",
+                "72": "LÁ BEMOL MAIOR",
+                "73": "DÓ MAIOR",
+                "74": "RÉ MAIOR",
+                "75": "LÁ BEMOL MAIOR",
+                "76": "DÓ MAIOR",
+                "77": "SI BEMOL MAIOR",
+                "78": "SOL MAIOR",
+                "79": "MI BEMOL MAIOR",
+                "80": "LÁ BEMOL MAIOR",
+                "81": "DÓ MAIOR",
+                "82": "LÁ BEMOL MAIOR",
+                "83": "MI BEMOL MAIOR",
+                "84": "MI BEMOL MAIOR",
+                "85": "LÁ BEMOL MAIOR",
+                "86": "MI BEMOL MAIOR",
+                "87": "MI BEMOL MAIOR",
+                "88": "SOL MAIOR",
+                "89": "SI BEMOL MAIOR",
+                "90": "LÁ BEMOL MAIOR",
+                "91": "RÉ BEMOL MAIOR",
+                "92": "MI BEMOL MAIOR",
+                "93": "SI BEMOL MAIOR",
+                "94": "DÓ MAIOR",
+                "95": "LÁ BEMOL MAIOR",
+                "96": "SOL MAIOR",
+                "97": "LÁ BEMOL MAIOR",
+                "98": "LÁ BEMOL MAIOR",
+                "99": "SOL MAIOR",
+                "100": "SI BEMOL MAIOR",
+                "101": "SOL MAIOR",
+                "102": "MI BEMOL MAIOR",
+                "103": "DÓ MAIOR",
+                "104": "FÁ MAIOR",
+                "105": "SI BEMOL MAIOR",
+                "106": "SOL MAIOR",
+                "107": "FÁ MAIOR",
+                "108": "SOL MAIOR",
+                "109": "SI BEMOL MAIOR",
+                "110": "MI BEMOL MAIOR",
+                "111": "MI BEMOL MAIOR",
+                "112": "MI BEMOL MAIOR",
+                "113": "MI BEMOL MAIOR",
+                "114": "SI BEMOL MAIOR",
+                "115": "SOL MAIOR",
+                "116": "DÓ MAIOR",
+                "117": "LÁ BEMOL MAIOR",
+                "118": "RÉ BEMOL MAIOR",
+                "119": "MI BEMOL MAIOR",
+                "120": "MI BEMOL MAIOR",
+                "121": "MI BEMOL MAIOR",
+                "122": "LÁ BEMOL MAIOR",
+                "123": "SI BEMOL MAIOR",
+                "124": "SOL MAIOR",
+                "125": "FÁ MAIOR",
+                "126": "LÁ BEMOL MAIOR",
+                "127": "RÉ MAIOR",
+                "128": "SI BEMOL MAIOR",
+                "129": "SI BEMOL MAIOR",
+                "130": "DÓ MAIOR",
+                "131": "SOL MAIOR",
+                "132": "SI BEMOL MAIOR",
+                "133": "FÁ MAIOR",
+                "134": "MI BEMOL MAIOR",
+                "135": "FÁ MAIOR",
+                "136": "RÉ BEMOL MAIOR",
+                "137": "SOL MAIOR",
+                "138": "LÁ MAIOR",
+                "139": "SOL MAIOR",
+                "140": "FÁ MAIOR",
+                "141": "MI BEMOL MAIOR",
+                "142": "FÁ MAIOR",
+                "143": "RÉ MAIOR",
+                "144": "MI BEMOL MAIOR",
+                "145": "RÉ BEMOL MAIOR",
+                "146": "RÉ MAIOR",
+                "147": "LÁ BEMOL MAIOR",
+                "148": "LÁ BEMOL MAIOR",
+                "149": "SOL MAIOR",
+                "150": "LÁ BEMOL MAIOR",
+                "151": "LÁ BEMOL MAIOR",
+                "152": "LÁ BEMOL MAIOR",
+                "153": "SI BEMOL MAIOR",
+                "154": "MI BEMOL MAIOR",
+                "155": "DÓ MAIOR",
+                "156": "MI BEMOL MAIOR",
+                "157": "LÁ BEMOL MAIOR",
+                "158": "DÓ MAIOR",
+                "159": "SOL MAIOR",
+                "160": "MI BEMOL MAIOR",
+                "161": "LÁ BEMOL MAIOR",
+                "162": "SOL MAIOR",
+                "163": "MI BEMOL MAIOR",
+                "164": "MI BEMOL MAIOR",
+                "165": "SI BEMOL MAIOR",
+                "166": "SOL MAIOR",
+                "167": "MI BEMOL MAIOR",
+                "168": "SI BEMOL MAIOR",
+                "169": "LÁ BEMOL MAIOR",
+                "170": "DÓ MAIOR",
+                "171": "DÓ MAIOR",
+                "172": "DÓ MAIOR",
+                "173": "SI BEMOL MAIOR",
+                "174": "LÁ BEMOL MAIOR",
+                "175": "DÓ MAIOR",
+                "176": "MI BEMOL MAIOR",
+                "177": "MI BEMOL MAIOR",
+                "178": "SI BEMOL MAIOR",
+                "179": "MI BEMOL MAIOR",
+                "180": "SOL MAIOR",
+                "181": "MI BEMOL MAIOR",
+                "182": "SI BEMOL MAIOR",
+                "183": "MI BEMOL MAIOR",
+                "184": "SOL MAIOR",
+                "185": "SOL MAIOR",
+                "186": "MI BEMOL MAIOR",
+                "187": "RÉ MAIOR",
+                "188": "LÁ MAIOR",
+                "189": "LÁ BEMOL MAIOR",
+                "190": "SI BEMOL MAIOR",
+                "191": "LÁ BEMOL MAIOR",
+                "192": "LÁ BEMOL MAIOR",
+                "193": "MI BEMOL MAIOR",
+                "194": "RÉ BEMOL MAIOR",
+                "195": "LÁ BEMOL MAIOR",
+                "196": "SI BEMOL MAIOR",
+                "197": "FÁ MAIOR",
+                "198": "RÉ MAIOR",
+                "199": "SOL MAIOR",
+                "200": "LÁ MAIOR",
+                "201": "DÓ MAIOR",
+                "202": "RÉ MAIOR",
+                "203": "RÉ MAIOR",
+                "204": "RÉ BEMOL MAIOR",
+                "205": "LÁ BEMOL MAIOR",
+                "206": "MI BEMOL MAIOR",
+                "207": "SOL MAIOR",
+                "208": "FÁ MAIOR",
+                "209": "SOL MAIOR",
+                "210": "MI BEMOL MAIOR",
+                "211": "DÓ MAIOR",
+                "212": "MI BEMOL MAIOR",
+                "213": "MI BEMOL MAIOR",
+                "214": "SOL MAIOR",
+                "215": "DÓ MAIOR",
+                "216": "RÉ BEMOL MAIOR",
+                "217": "RÉ BEMOL MAIOR",
+                "218": "LÁ BEMOL MAIOR",
+                "219": "SI BEMOL MAIOR",
+                "220": "DÓ MAIOR",
+                "221": "MI BEMOL MAIOR",
+                "222": "SI BEMOL MAIOR",
+                "223": "FÁ MAIOR",
+                "224": "DÓ MAIOR",
+                "225": "MI BEMOL MAIOR",
+                "226": "RÉ MAIOR",
+                "227": "SOL MAIOR",
+                "228": "SOL MAIOR",
+                "229": "RÉ MAIOR",
+                "230": "SOL MAIOR",
+                "231": "SOL MAIOR",
+                "232": "SOL MAIOR",
+                "233": "DÓ MAIOR",
+                "234": "RÉ MAIOR",
+                "235": "FÁ MAIOR",
+                "236": "MI BEMOL MAIOR",
+                "237": "MI BEMOL MAIOR",
+                "238": "RÉ BEMOL MAIOR",
+                "239": "FÁ MAIOR",
+                "240": "LÁ BEMOL MAIOR",
+                "241": "FÁ MAIOR",
+                "242": "LÁ MAIOR",
+                "243": "SOL MAIOR",
+                "244": "FÁ MAIOR",
+                "245": "SOL MAIOR",
+                "246": "LÁ BEMOL MAIOR",
+                "247": "LÁ BEMOL MAIOR",
+                "248": "RÉ MAIOR",
+                "249": "SI BEMOL MAIOR",
+                "250": "RÉ MAIOR",
+                "251": "SOL MAIOR",
+                "252": "MI BEMOL MAIOR",
+                "253": "SOL MAIOR",
+                "254": "FÁ MAIOR",
+                "255": "SI BEMOL MAIOR",
+                "256": "SOL MAIOR",
+                "257": "FÁ MAIOR",
+                "258": "SI BEMOL MAIOR",
+                "259": "SOL MAIOR",
+                "260": "MI BEMOL MAIOR",
+                "261": "FÁ MAIOR",
+                "262": "RÉ MAIOR",
+                "263": "RÉ MAIOR",
+                "264": "DÓ MAIOR",
+                "265": "SI BEMOL MAIOR",
+                "266": "SI BEMOL MAIOR",
+                "267": "SI BEMOL MAIOR",
+                "268": "FÁ MAIOR",
+                "269": "SOL MAIOR",
+                "270": "MI BEMOL MAIOR",
+                "271": "SOL MAIOR",
+                "272": "SI BEMOL MAIOR",
+                "273": "LÁ BEMOL MAIOR",
+                "274": "MI BEMOL MAIOR",
+                "275": "LÁ MAIOR",
+                "276": "MI BEMOL MAIOR",
+                "277": "SOL MAIOR",
+                "278": "SOL MAIOR",
+                "279": "LÁ BEMOL MAIOR",
+                "280": "MI BEMOL MAIOR",
+                "281": "FÁ MAIOR",
+                "282": "DÓ MAIOR",
+                "283": "SOL MAIOR",
+                "284": "FÁ MAIOR",
+                "285": "LÁ MAIOR",
+                "286": "RÉ MAIOR",
+                "287": "SOL MAIOR",
+                "288": "SOL MAIOR",
+                "289": "MI MAIOR",
+                "290": "LÁ BEMOL MAIOR",
+                "291": "SOL MAIOR",
+                "292": "SI BEMOL MAIOR",
+                "293": "MI BEMOL MAIOR",
+                "294": "MI BEMOL MAIOR",
+                "295": "SOL MAIOR",
+                "296": "SI BEMOL MAIOR",
+                "297": "SOL MAIOR",
+                "298": "SI BEMOL MAIOR",
+                "299": "SI BEMOL MAIOR",
+                "300": "RÉ MAIOR",
+                "301": "MI BEMOL MAIOR",
+                "302": "DÓ MAIOR",
+                "303": "DÓ MAIOR",
+                "304": "MI BEMOL MAIOR",
+                "305": "LÁ BEMOL MAIOR",
+                "306": "SOL MAIOR",
+                "307": "MI BEMOL MAIOR",
+                "308": "LÁ BEMOL MAIOR",
+                "309": "LÁ BEMOL MAIOR",
+                "310": "SI BEMOL MAIOR",
+                "311": "LÁ BEMOL MAIOR",
+                "312": "RÉ MAIOR",
+                "313": "DÓ MAIOR",
+                "314": "MI BEMOL MAIOR",
+                "315": "SOL MAIOR",
+                "316": "SI BEMOL MAIOR",
+                "317": "LÁ BEMOL MAIOR",
+                "318": "SI BEMOL MAIOR",
+                "319": "SOL MAIOR",
+                "320": "SI BEMOL MAIOR",
+                "321": "LÁ BEMOL MAIOR",
+                "322": "DÓ MAIOR",
+                "323": "SI BEMOL MAIOR",
+                "324": "DÓ MAIOR",
+                "325": "SOL MAIOR",
+                "326": "FÁ MAIOR",
+                "327": "SOL MAIOR",
+                "328": "SI BEMOL MAIOR",
+                "329": "SOL MAIOR",
+                "330": "LÁ BEMOL MAIOR",
+                "331": "LÁ BEMOL MAIOR",
+                "332": "SI BEMOL MAIOR",
+                "333": "DÓ MAIOR",
+                "334": "SOL MAIOR",
+                "335": "MI BEMOL MAIOR",
+                "336": "RÉ MAIOR",
+                "337": "SI BEMOL MAIOR",
+                "338": "SI BEMOL MAIOR",
+                "339": "LÁ BEMOL MAIOR",
+                "340": "RÉ BEMOL MAIOR",
+                "341": "RÉ MAIOR",
+                "342": "DÓ MAIOR",
+                "343": "DÓ MAIOR",
+                "344": "LÁ BEMOL MAIOR",
+                "345": "FÁ MAIOR",
+                "346": "LÁ BEMOL MAIOR",
+                "347": "LÁ BEMOL MAIOR",
+                "348": "DÓ MAIOR",
+                "349": "MI BEMOL MAIOR",
+                "350": "RÉ MAIOR",
+                "351": "DÓ MAIOR",
+                "352": "SOL MAIOR",
+                "353": "SOL MAIOR",
+                "354": "SOL MAIOR",
+                "355": "MI BEMOL MAIOR",
+                "356": "RÉ MAIOR",
+                "357": "FÁ MAIOR",
+                "358": "DÓ MAIOR",
+                "359": "RÉ MAIOR",
+                "360": "MI BEMOL MAIOR",
+                "361": "RÉ BEMOL MAIOR",
+                "362": "LÁ BEMOL MAIOR",
+                "363": "SOL MAIOR",
+                "364": "DÓ MAIOR",
+                "365": "LÁ BEMOL MAIOR",
+                "366": "FÁ MAIOR",
+                "367": "RÉ MAIOR",
+                "368": "SOL MAIOR",
+                "369": "MI BEMOL MAIOR",
+                "370": "MI BEMOL MAIOR",
+                "371": "MI BEMOL MAIOR",
+                "372": "DÓ MAIOR",
+                "373": "LÁ BEMOL MAIOR",
+                "374": "MI BEMOL MAIOR",
+                "375": "DÓ MAIOR",
+                "376": "MI BEMOL MAIOR",
+                "377": "LÁ BEMOL MAIOR",
+                "378": "SI BEMOL MAIOR",
+                "379": "LÁ BEMOL MAIOR",
+                "380": "RÉ MAIOR",
+                "381": "RÉ BEMOL MAIOR",
+                "382": "SI BEMOL MAIOR",
+                "383": "FÁ MAIOR",
+                "384": "RÉ MAIOR",
+                "385": "RÉ MAIOR",
+                "386": "DÓ MAIOR",
+                "387": "RÉ BEMOL MAIOR",
+                "388": "DÓ MAIOR",
+                "389": "SI BEMOL MAIOR",
+                "390": "DÓ MAIOR",
+                "391": "LÁ BEMOL MAIOR",
+                "392": "LÁ BEMOL MAIOR",
+                "393": "SI BEMOL MAIOR",
+                "394": "RÉ MAIOR",
+                "395": "MI BEMOL MAIOR",
+                "396": "SI BEMOL MAIOR",
+                "397": "LÁ BEMOL MAIOR",
+                "398": "SI BEMOL MAIOR",
+                "399": "FÁ MAIOR",
+                "400": "MI BEMOL MAIOR",
+                "401": "DÓ MAIOR",
+                "402": "FÁ MAIOR",
+                "403": "DÓ MAIOR",
+                "404": "LÁ BEMOL MAIOR",
+                "405": "LÁ BEMOL MAIOR",
+                "406": "SOL MAIOR",
+                "407": "SOL MAIOR",
+                "408": "LÁ BEMOL MAIOR",
+                "409": "SOL MAIOR",
+                "410": "SOL MAIOR",
+                "411": "MI BEMOL MAIOR",
+                "412": "FÁ MAIOR",
+                "413": "FÁ MAIOR",
+                "414": "RÉ MAIOR",
+                "415": "DÓ MAIOR",
+                "416": "MI BEMOL MAIOR",
+                "417": "RÉ MAIOR",
+                "418": "RÉ MAIOR",
+                "419": "SOL MAIOR",
+                "420": "SOL MAIOR",
+                "421": "MI BEMOL MAIOR",
+                "422": "MI BEMOL MAIOR",
+                "423": "LÁ BEMOL MAIOR",
+                "424": "FÁ MAIOR",
+                "425": "RÉ BEMOL MAIOR",
+                "426": "MI BEMOL MAIOR",
+                "427": "MI BEMOL MAIOR",
+                "428": "FÁ MAIOR",
+                "429": "MI MAIOR",
+                "430": "FÁ MAIOR",
+                "431": "DÓ MAIOR",
+                "432": "LÁ BEMOL MAIOR",
+                "433": "SI BEMOL MAIOR",
+                "434": "DÓ MAIOR",
+                "435": "MI BEMOL MAIOR",
+                "436": "RÉ MAIOR",
+                "437": "SOL MAIOR",
+                "438": "MI BEMOL MAIOR",
+                "439": "SI BEMOL MAIOR",
+                "440": "FÁ MAIOR",
+                "441": "RÉ MAIOR",
+                "442": "LÁ BEMOL MAIOR",
+                "443": "SI BEMOL MAIOR",
+                "444": "RÉ MAIOR",
+                "445": "SI BEMOL MAIOR",
+                "446": "SOL MAIOR",
+                "447": "MI BEMOL MAIOR",
+                "448": "SI BEMOL MAIOR",
+                "449": "LÁ BEMOL MAIOR",
+                "450": "LÁ BEMOL MAIOR",
+                "451": "SI BEMOL MAIOR",
+                "452": "LÁ BEMOL MAIOR",
+                "453": "FÁ MAIOR",
+                "454": "SOL MAIOR",
+                "455": "RÉ BEMOL MAIOR",
+                "456": "MI BEMOL MAIOR",
+                "457": "DÓ MAIOR",
+                "458": "MI BEMOL MAIOR",
+                "459": "DÓ MAIOR",
+                "460": "FÁ MAIOR",
+                "461": "DÓ MAIOR",
+                "462": "MI BEMOL MAIOR",
+                "463": "LÁ BEMOL MAIOR",
+                "464": "MI BEMOL MAIOR",
+                "465": "SI BEMOL MAIOR",
+                "466": "SOL MAIOR",
+                "467": "MI BEMOL MAIOR",
+                "468": "FÁ MAIOR",
+                "469": "LÁ BEMOL MAIOR",
+                "470": "RÉ MAIOR",
+                "471": "DÓ MAIOR",
+                "472": "DÓ MAIOR",
+                "473": "MI BEMOL MAIOR",
+                "474": "SI BEMOL MAIOR",
+                "475": "MI BEMOL MAIOR",
+                "476": "SI BEMOL MAIOR",
+                "477": "SI BEMOL MAIOR",
+                "478": "MI BEMOL MAIOR",
+                "479": "SI BEMOL MAIOR",
+                "480": "SI BEMOL MAIOR"
+    },
+    coros: {
+        "C1": "LÁ MAIOR",
+        "C2": "SOL MAIOR",
+        "C3": "SOL MAIOR",
+        "C4": "LÁ BEMOL MAIOR",
+        "C5": "SI BEMOL MAIOR",
+        "C6": "SOL MAIOR"
+    }
+};
+
+// Armaduras de clave
+const armaduras = {
+    "DÓ MAIOR": "Nenhum acidente (armadura vazia)",
+    "SOL MAIOR": "Fá#",
+    "RÉ MAIOR": "Fá#, Dó#",
+    "LÁ MAIOR": "Fá#, Dó#, Sol#",
+    "MI MAIOR": "Fá#, Dó#, Sol#, Ré#",
+    "SI MAIOR": "Fá#, Dó#, Sol#, Ré#, Lá#",
+    "FÁ MAIOR": "Sib",
+    "SI BEMOL MAIOR": "Sib, Mib",
+    "MI BEMOL MAIOR": "Sib, Mib, Láb",
+    "LÁ BEMOL MAIOR": "Sib, Mib, Láb, Réb",
+    "RÉ BEMOL MAIOR": "Sib, Mib, Láb, Réb, Solb"
+};
+
+// Mapeamento de transposição para instrumentos
+const instrumentMappings = {
+    "C": {}, // Dó Maior (original)
+    "Bb": {}, // Si Bemol Maior (+1 tom)
+    "Eb": {}  // Mi Bemol Maior (-5 semitons)
+};
+
+// Gerar os mapeamentos de transposição
+function generateTransposedHinos() {
+    // Transposição para Si Bemol Maior (+1 tom = 2 semitons acima)
+    const transpositionBb = {
+        "DÓ MAIOR": "RÉ MAIOR",
+        "RÉ MAIOR": "MI MAIOR",
+        "MI MAIOR": "FÁ# MAIOR",
+        "FÁ MAIOR": "SOL MAIOR",
+        "SOL MAIOR": "LÁ MAIOR",
+        "LÁ MAIOR": "SI MAIOR",
+        "SI MAIOR": "DÓ# MAIOR",
+        "MI BEMOL MAIOR": "FÁ MAIOR",
+        "SI BEMOL MAIOR": "DÓ MAIOR",
+        "LÁ BEMOL MAIOR": "SI BEMOL MAIOR",
+        "RÉ BEMOL MAIOR": "MI BEMOL MAIOR"
+    };
+
+    // Transposição para Mi Bemol Maior (-5 semitons = ou +7 semitons acima)
+    const transpositionEb = {
+        "DÓ MAIOR": "LÁ MAIOR",
+        "RÉ MAIOR": "SI MAIOR",
+        "MI MAIOR": "DÓ MAIOR",
+        "FÁ MAIOR": "RÉ MAIOR",
+        "SOL MAIOR": "MI MAIOR",
+        "LÁ MAIOR": "FÁ# MAIOR",
+        "MI BEMOL MAIOR": "DÓ MAIOR",
+        "SI BEMOL MAIOR": "SOL MAIOR",
+        "LÁ BEMOL MAIOR": "FÁ MAIOR",
+        "RÉ BEMOL MAIOR": "SI BEMOL MAIOR"
+    };
+
+    // Preencher os mapeamentos
+    for (const hino in hinosDB.hinos) {
+        const originalTonalidade = hinosDB.hinos[hino];
+        instrumentMappings.C[hino] = originalTonalidade;
+        instrumentMappings.Bb[hino] = transpositionBb[originalTonalidade] || originalTonalidade;
+        instrumentMappings.Eb[hino] = transpositionEb[originalTonalidade] || originalTonalidade;
+    }
+
+    // Coros também
+    for (const coro in hinosDB.coros) {
+        const originalTonalidade = hinosDB.coros[coro];
+        instrumentMappings.C[coro] = originalTonalidade;
+        instrumentMappings.Bb[coro] = transpositionBb[originalTonalidade] || originalTonalidade;
+        instrumentMappings.Eb[coro] = transpositionEb[originalTonalidade] || originalTonalidade;
+    }
+}
+
+// Função para formatar o texto do hino
+function formatHinoText(hinoNumber) {
+    if (hinoNumber.startsWith("C")) {
+        return `Coro ${hinoNumber.substring(1)}`;
+    }
+    return `Hino ${hinoNumber}`;
+}
+
+// Função para embaralhar array
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// Função para gerar a sequência de hinos
+function generateHinoSequence() {
+    const allHinos = Object.keys(hinosDB.hinos);
+    const allCoros = Object.keys(hinosDB.coros);
+    hinoSequence = shuffleArray([...allHinos, ...allCoros]);
+    currentIndex = 0;
+}
+
+// Atualizar estatísticas
+function updateStats() {
+    statsElement.textContent = `Perguntas: ${totalQuestions} | Acertos: ${correctAnswers} | Erros: ${wrongAnswers}`;
+    const progress = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+    progressElement.textContent = progress;
+    progressBar.style.width = `${progress}%`;
+}
+
+// Mostrar informação da armadura
+function showArmadura(tonalidade) {
+    armaduraElement.textContent = `Armadura: ${armaduras[tonalidade] || 'Informação não disponível'}`;
+}
+
+// Gerar opções de resposta
+function generateOptions(correct) {
+    const allTonalidades = [...new Set([
+        ...Object.values(hinosDB.hinos),
+        ...Object.values(hinosDB.coros)
+    ])];
+    
+    let options = [correct];
+    
+    while (options.length < 3) {
+        const randomIndex = Math.floor(Math.random() * allTonalidades.length);
+        const randomTonalidade = allTonalidades[randomIndex];
+        
+        if (!options.includes(randomTonalidade)) {
+            options.push(randomTonalidade);
+        }
+    }
+    
+    return shuffleArray(options);
+}
+
+// Iniciar o quiz
+function startQuiz() {
+    if (currentIndex === 0 || currentIndex >= hinoSequence.length) {
+        generateHinoSequence();
+    }
+    
+    const instrument = instrumentSelector.value;
+    currentHino = hinoSequence[currentIndex];
+    correctAnswer = instrumentMappings[instrument][currentHino];
+    currentIndex++;
+
+    questionElement.textContent = `Qual a tonalidade do ${formatHinoText(currentHino)}?`;
+
+    const options = generateOptions(correctAnswer);
+    optionsElement.innerHTML = '';
+
+    options.forEach(option => {
+        const button = document.createElement('button');
+        button.textContent = option;
+        button.addEventListener('click', () => checkAnswer(option));
+        optionsElement.appendChild(button);
+    });
+
+    resultElement.textContent = '';
+    resultElement.className = 'result';
+    armaduraElement.textContent = '';
+    nextButton.style.display = 'none';
+}
+
+// Verificar a resposta
+function checkAnswer(selectedOption) {
+    const buttons = optionsElement.querySelectorAll('button');
+    buttons.forEach(button => {
+        button.disabled = true;
+        if (button.textContent === correctAnswer) {
+            button.style.backgroundColor = '#d4edda';
+            button.style.borderColor = '#c3e6cb';
+        }
+    });
+
+    totalQuestions++;
+    
+    if (!answeredTonalidades[correctAnswer]) {
+        answeredTonalidades[correctAnswer] = { acertos: 0, erros: 0 };
+    }
+    
+    if (selectedOption === correctAnswer) {
+        correctAnswers++;
+        answeredTonalidades[correctAnswer].acertos++;
+        resultElement.textContent = 'Correto!';
+        resultElement.className = 'result correct';
+    } else {
+        wrongAnswers++;
+        answeredTonalidades[correctAnswer].erros++;
+        resultElement.textContent = `Incorreto! O correto é ${correctAnswer}.`;
+        resultElement.className = 'result incorrect';
+    }
+
+    showArmadura(correctAnswer);
+    updateStats();
+    nextButton.style.display = 'block';
+}
+
+// Mostrar estatísticas por tonalidade
+function showTonalidadesStats() {
+    let html = '<h3>Desempenho por Tonalidade:</h3><ul style="text-align: left; list-style-type: none; padding: 0;">';
+    
+    const sortedTonalidades = Object.keys(answeredTonalidades).sort((a, b) => {
+        const aTotal = answeredTonalidades[a].acertos + answeredTonalidades[a].erros;
+        const aRate = aTotal > 0 ? answeredTonalidades[a].erros / aTotal : 0;
+        
+        const bTotal = answeredTonalidades[b].acertos + answeredTonalidades[b].erros;
+        const bRate = bTotal > 0 ? answeredTonalidades[b].erros / bTotal : 0;
+        
+        return bRate - aRate;
+    });
+    
+    sortedTonalidades.forEach(ton => {
+        const total = answeredTonalidades[ton].acertos + answeredTonalidades[ton].erros;
+        const acertoRate = total > 0 ? Math.round((answeredTonalidades[ton].acertos / total) * 100) : 0;
+        
+        html += `
+            <li style="margin-bottom: 8px;">
+                <strong>${ton}</strong>: 
+                ${answeredTonalidades[ton].acertos} acertos / 
+                ${answeredTonalidades[ton].erros} erros 
+                (${acertoRate}% de acerto)
+                <div style="height: 5px; background: #ecf0f1; margin-top: 3px;">
+                    <div style="height: 100%; width: ${acertoRate}%; background: ${acertoRate > 70 ? '#2ecc71' : acertoRate > 40 ? '#f39c12' : '#e74c3c'};"></div>
+                </div>
+            </li>
+        `;
+    });
+    
+    html += '</ul>';
+    tonalidadesStatsElement.innerHTML = html;
+}
+
+// Event Listeners
+helpButton.addEventListener('click', () => {
+    helpModal.style.display = 'block';
+});
+
+exitButton.addEventListener('click', () => {
+    exitStatsElement.innerHTML = `
+        <p><strong>Total de perguntas:</strong> ${totalQuestions}</p>
+        <p><strong>Respostas corretas:</strong> ${correctAnswers}</p>
+        <p><strong>Respostas incorretas:</strong> ${wrongAnswers}</p>
+        <p><strong>Taxa de acerto:</strong> ${totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0}%</p>
+    `;
+    
+    showTonalidadesStats();
+    exitModal.style.display = 'block';
+});
+
+restartButton.addEventListener('click', () => {
+    totalQuestions = 0;
+    correctAnswers = 0;
+    wrongAnswers = 0;
+    answeredTonalidades = {};
+    currentIndex = 0;
+    
+    exitModal.style.display = 'none';
+    updateStats();
+    startQuiz();
+});
+
+for (let i = 0; i < closeButtons.length; i++) {
+    closeButtons[i].addEventListener('click', function() {
+        helpModal.style.display = 'none';
+        exitModal.style.display = 'none';
+    });
+}
+
+confirmExitButton.addEventListener('click', () => {
+    window.close();
+});
+
+window.addEventListener('click', (event) => {
+    if (event.target === helpModal) {
+        helpModal.style.display = 'none';
+    }
+    if (event.target === exitModal) {
+        exitModal.style.display = 'none';
+    }
+});
+
+nextButton.addEventListener('click', startQuiz);
+
+instrumentSelector.addEventListener('change', () => {
+    // Reinicia o quiz quando muda o instrumento
+    totalQuestions = 0;
+    correctAnswers = 0;
+    wrongAnswers = 0;
+    answeredTonalidades = {};
+    currentIndex = 0;
+    updateStats();
+    startQuiz();
+});
+
+// Inicialização
+generateTransposedHinos();
+generateHinoSequence();
+startQuiz();
+updateStats();
+    </script>
+</body>
+</html>
