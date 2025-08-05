@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Hinos CCB (Propriedades Básicas)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .question-container {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .question {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #34495e;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-btn {
+            padding: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #ecf0f1;
+            border: 2px solid #bdc3c7;
+            border-radius: 6px;
+            transition: all 0.3s;
+            text-align: left;
+        }
+        .option-btn:hover {
+            background-color: #d6eaf8;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            display: none;
+        }
+        .next-btn {
+            padding: 12px;
+            font-size: 1.1em;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        .next-btn:hover {
+            background-color: #2980b9;
+        }
+        .stats {
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #e8f4f8;
+            border-radius: 6px;
+            font-size: 1.1em;
+            border: 1px solid #d1e7f0;
+        }
+        .progress-container {
+            margin-top: 20px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .progress-bar {
+            height: 20px;
+            background-color: #3498db;
+            border-radius: 3px;
+            transition: width 0.5s;
+        }
+        .property-name {
+            font-weight: bold;
+            color: #2980b9;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz de Propriedades Musicais - Hinos CCB</h1>
+        
+        <div id="quiz-container">
+            <div class="question-container">
+                <div class="question" id="hino-number"></div>
+                
+                <div id="property-questions">
+                    <!-- Perguntas serão inseridas aqui -->
+                </div>
+                
+                <button id="next-btn" class="next-btn">Próximo Hino</button>
+            </div>
+            
+            <div class="stats" id="stats">
+                Perguntas: 0 | Acertos: 0 | Erros: 0
+            </div>
+            
+            <div class="progress-container">
+                <div>Progresso: <span id="progress">0</span>%</div>
+                <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Vetor menor com os dados dos hinos
+        const hinosDB = [
+            { "Hino": "1", "Formula de Compasso": "4/4", "Tonalidade": "E♭", "Ritmo Inicial": "TÉTICO" },
+            { "Hino": "2", "Formula de Compasso": "4/4", "Tonalidade": "E♭", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "3", "Formula de Compasso": "4/4", "Tonalidade": "G", "Ritmo Inicial": "TÉTICO" },
+            { "Hino": "4", "Formula de Compasso": "6/4", "Tonalidade": "A♭", "Ritmo Inicial": "TÉTICO" },
+            { "Hino": "5", "Formula de Compasso": "6/8", "Tonalidade": "A♭", "Ritmo Inicial": "TÉTICO" },
+            { "Hino": "6", "Formula de Compasso": "4/4", "Tonalidade": "C", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "7", "Formula de Compasso": "6/4", "Tonalidade": "E♭", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "8", "Formula de Compasso": "6/8", "Tonalidade": "B♭", "Ritmo Inicial": "TÉTICO" },
+            { "Hino": "9", "Formula de Compasso": "3/4", "Tonalidade": "G", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "10", "Formula de Compasso": "4/4", "Tonalidade": "B♭", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "11", "Formula de Compasso": "4/4", "Tonalidade": "B♭", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "12", "Formula de Compasso": "3/4", "Tonalidade": "E♭", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "13", "Formula de Compasso": "4/4", "Tonalidade": "A♭", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "14", "Formula de Compasso": "6/8", "Tonalidade": "F", "Ritmo Inicial": "TÉTICO" },
+            { "Hino": "15", "Formula de Compasso": "12/8", "Tonalidade": "B♭", "Ritmo Inicial": "TÉTICO" },
+            { "Hino": "16", "Formula de Compasso": "6/4", "Tonalidade": "G", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "17", "Formula de Compasso": "3/4", "Tonalidade": "G", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "18", "Formula de Compasso": "3/4", "Tonalidade": "G", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "19", "Formula de Compasso": "4/4", "Tonalidade": "A♭", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "20", "Formula de Compasso": "4/4", "Tonalidade": "F", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "21", "Formula de Compasso": "6/8", "Tonalidade": "E♭", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "22", "Formula de Compasso": "6/8", "Tonalidade": "A", "Ritmo Inicial": "TÉTICO" },
+            { "Hino": "23", "Formula de Compasso": "6/4", "Tonalidade": "G", "Ritmo Inicial": "TÉTICO" },
+            { "Hino": "24", "Formula de Compasso": "6/4", "Tonalidade": "G", "Ritmo Inicial": "ANACRÚSICO" },
+            { "Hino": "25", "Formula de Compasso": "3/4", "Tonalidade": "G", "Ritmo Inicial": "ANACRÚSICO" }
+        ];
+
+        // Elementos da página
+        const hinoNumberElement = document.getElementById('hino-number');
+        const propertyQuestionsElement = document.getElementById('property-questions');
+        const nextButton = document.getElementById('next-btn');
+        const statsElement = document.getElementById('stats');
+        const progressElement = document.getElementById('progress');
+        const progressBar = document.getElementById('progress-bar');
+
+        // Variáveis do quiz
+        let currentHino;
+        let totalQuestions = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        const propertiesToQuiz = ["Formula de Compasso", "Tonalidade", "Ritmo Inicial"];
+
+        // Função para formatar o texto do hino
+        function formatHinoText(hinoNumber) {
+            return `Hino ${hinoNumber}`;
+        }
+
+        // Função para embaralhar array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Função para gerar opções de resposta
+        function generateOptions(property, correctValue) {
+            // Valores possíveis para cada propriedade (únicos e baseados nos dados reais)
+            const possibleValues = {
+                "Formula de Compasso": ["4/4", "6/8", "3/4", "6/4", "12/8"],
+                "Tonalidade": ["E♭", "G", "A♭", "C", "B♭", "F", "A"],
+                "Ritmo Inicial": ["TÉTICO", "ANACRÚSICO", "ACÉFALO"]
+            };
+
+            // Filtra valores possíveis, removendo o correto para evitar duplicatas
+            let availableOptions = possibleValues[property].filter(val => val !== correctValue);
+            
+            // Embaralha as opções disponíveis
+            availableOptions = shuffleArray(availableOptions);
+            
+            // Pega no máximo 2 opções erradas (para ter 3 no total: 1 correta + 2 erradas)
+            const wrongOptions = availableOptions.slice(0, 2);
+            
+            // Combina a resposta correta com as erradas e embaralha
+            const finalOptions = shuffleArray([correctValue, ...wrongOptions]);
+            
+            return finalOptions;
+        }
+
+        // Função para criar uma pergunta sobre uma propriedade
+        function createPropertyQuestion(property, correctValue) {
+            const options = generateOptions(property, correctValue);
+            
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'property-question';
+            questionDiv.dataset.property = property;
+            questionDiv.dataset.correctAnswer = correctValue;
+            
+            const propertyName = document.createElement('div');
+            propertyName.className = 'property-name';
+            propertyName.textContent = property + ':';
+            questionDiv.appendChild(propertyName);
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = option;
+                button.dataset.value = option;
+                
+                button.addEventListener('click', function() {
+                    checkAnswer(this, property, correctValue);
+                });
+                
+                optionsDiv.appendChild(button);
+            });
+            
+            questionDiv.appendChild(optionsDiv);
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'result';
+            questionDiv.appendChild(resultDiv);
+            
+            return questionDiv;
+        }
+
+        // Função para verificar a resposta
+        function checkAnswer(selectedButton, property, correctValue) {
+            const questionDiv = selectedButton.closest('.property-question');
+            const buttons = questionDiv.querySelectorAll('.option-btn');
+            const resultDiv = questionDiv.querySelector('.result');
+            
+            // Desabilitar todos os botões desta pergunta
+            buttons.forEach(button => {
+                button.disabled = true;
+                
+                // Marcar a resposta correta
+                if (button.dataset.value === correctValue) {
+                    button.classList.add('correct');
+                }
+            });
+            
+            // Verificar se a resposta está correta
+            if (selectedButton.dataset.value === correctValue) {
+                resultDiv.textContent = 'Correto!';
+                resultDiv.className = 'result correct';
+                correctAnswers++;
+            } else {
+                selectedButton.classList.add('incorrect');
+                resultDiv.textContent = `Incorreto! O correto é ${correctValue}.`;
+                resultDiv.className = 'result incorrect';
+                wrongAnswers++;
+            }
+            
+            resultDiv.style.display = 'block';
+            totalQuestions++;
+            updateStats();
+        }
+
+        // Função para atualizar estatísticas
+        function updateStats() {
+            statsElement.textContent = `Perguntas: ${totalQuestions} | Acertos: ${correctAnswers} | Erros: ${wrongAnswers}`;
+            const progress = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            progressElement.textContent = progress;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Função para iniciar um novo hino
+        function startNewHino() {
+            // Selecionar um hino aleatório
+            const randomIndex = Math.floor(Math.random() * hinosDB.length);
+            currentHino = hinosDB[randomIndex];
+            
+            // Mostrar o número do hino
+            hinoNumberElement.textContent = formatHinoText(currentHino.Hino);
+            
+            // Limpar perguntas anteriores
+            propertyQuestionsElement.innerHTML = '';
+            
+            // Criar perguntas para cada propriedade
+            propertiesToQuiz.forEach(property => {
+                const correctValue = currentHino[property];
+                if (correctValue) {
+                    const questionElement = createPropertyQuestion(property, correctValue);
+                    propertyQuestionsElement.appendChild(questionElement);
+                }
+            });
+        }
+
+        // Event listener para o botão "Próximo Hino"
+        nextButton.addEventListener('click', startNewHino);
+
+        // Iniciar o quiz
+        startNewHino();
+//        updateStats();
+    </script>
+</body>
+</html>
