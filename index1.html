@@ -113,12 +113,47 @@
             color: #2980b9;
             margin-bottom: 5px;
         }
-    </style>
+        .hinario-section {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+        }
+        .hinario-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .hinario-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+</style>
 </head>
 <body>
     <div class="container">
         <h1>Quiz de Propriedades Musicais - Hinos CCB</h1>
-        
+        <div class="hinario-section">
+            <label>Hinário:</label>
+            <div class="hinario-options">
+                <div class="hinario-option">
+                    <input type="radio" id="do" name="hinario" value="DÓ" checked>
+                    <label for="do">Dó</label>
+                </div>
+                <div class="hinario-option">
+                    <input type="radio" id="si_bemol" name="hinario" value="SI BEMOL">
+                    <label for="si_bemol">Si Bemol</label>
+                </div>
+                <div class="hinario-option">
+                    <input type="radio" id="mi_bemol" name="hinario" value="MI BEMOL">
+                    <label for="mi_bemol">Mi Bemol</label>
+                </div>
+            </div>
+        </div>        
         <div id="quiz-container">
             <div class="question-container">
                 <div class="question" id="hino-number"></div>
@@ -646,6 +681,7 @@
         let totalQuestions = 0;
         let correctAnswers = 0;
         let wrongAnswers = 0;
+        let correctValue = "aaa";
         const propertiesToQuiz = ["Formula de Compasso", "Tonalidade", "Ritmo Inicial", "Unidade de Movimento", "Unidade de Tempo", "Unidade de Compasso"];
 
         // Função para formatar o texto do hino
@@ -666,13 +702,25 @@
         function generateOptions(property, correctValue) {
             // Valores possíveis para cada propriedade (únicos e baseados nos dados reais)
             const possibleValues = {
-                "Formula de Compasso": ["4/4", "6/8", "3/4", "6/4", "12/8"],
-                "Tonalidade": ["E♭", "G", "A♭", "C", "B♭", "F", "A"],
+                "Formula de Compasso": [ "Binário Simples", "Ternário Simples", "Quaternário Simples", "Binário Composto", "Ternário Composto", "Quaternário Composto"],
+                "Tonalidade": ["RÉ BEMOL MAIOR", "LÁ BEMOL MAIOR", "MI BEMOL MAIOR", "SI BEMOL MAIOR", "FÁ MAIOR", "DÓ MAIOR", "SOL MAIOR", "RÉ MAIOR", "LÁ MAIOR", "MI MAIOR"],
+                //"Tonalidade": ["MI BEMOL MAIOR", "SI BEMOL MAIOR", "FÁ MAIOR", "DÓ MAIOR", "SOL MAIOR", "RÉ MAIOR", "LÁ MAIOR", "MI MAIOR", "SI MAIOR", "FÁ SUSTENIDO MAIOR"],
+                //"Tonalidade": ["SI BEMOL MAIOR", "FÁ MAIOR", "DÓ MAIOR", "SOL MAIOR", "RÉ MAIOR", "LÁ MAIOR", "MI MAIOR", "SI MAIOR", "DÓ SUSTENIDO MAIOR"],
                 "Ritmo Inicial": ["TÉTICO", "ANACRÚSICO", "ACÉFALO"],
                 "Unidade de Movimento": ["Seminima", "Colcheia", "Minima"],
                 "Unidade de Tempo": ["Seminima", "Colcheia", "Minima"],
                 "Unidade de Compasso": ["Seminima", "Colcheia", "Minima"]
             };
+
+            if (property=="Tonalidade") {
+                const selected = document.querySelector('input[name="hinario"]:checked');
+                if (selected.value=="SI BEMOL") {
+                    possibleValues["Tonalidade"] = ["MI BEMOL MAIOR", "SI BEMOL MAIOR", "FÁ MAIOR", "DÓ MAIOR", "SOL MAIOR", "RÉ MAIOR", "LÁ MAIOR", "MI MAIOR", "SI MAIOR", "FÁ SUSTENIDO MAIOR"];
+                } else if (selected.value=="MI BEMOL") {
+                    possibleValues["Tonalidade"] = ["SI BEMOL MAIOR", "FÁ MAIOR", "DÓ MAIOR", "SOL MAIOR", "RÉ MAIOR", "LÁ MAIOR", "MI MAIOR", "SI MAIOR", "DÓ SUSTENIDO MAIOR"];
+                }
+            }
+
             // Filtra valores possíveis, removendo o correto para evitar duplicatas
             let availableOptions = possibleValues[property].filter(val => val !== correctValue);
 
@@ -683,7 +731,6 @@
             
             // Combina a resposta correta com as erradas e embaralha
             const finalOptions = shuffleArray([correctValue, ...wrongOptions]);
-            //alert(finalOptions + "cc");
             return finalOptions;
         }
 
@@ -783,15 +830,33 @@
                 document.getElementById('hino-number').innerHTML = document.getElementById('hino-number').innerHTML.replace("Hino C", "Coro ")
             }
             propertiesToQuiz.forEach(property => {
-                const correctValue = currentHino[property];
+                correctValue = currentHino[property];
+                if (property=="Tonalidade") {
+                    const selected = document.querySelector('input[name="hinario"]:checked');
+                    if (selected.value=="SI BEMOL" || selected.value=="MI BEMOL") {
+                        const Tonalidades  = ["RÉ BEMOL MAIOR", "LÁ BEMOL MAIOR", "MI BEMOL MAIOR", "SI BEMOL MAIOR", "FÁ MAIOR", "DÓ MAIOR", "SOL MAIOR", "RÉ MAIOR", "LÁ MAIOR", "MI MAIOR", "SI MAIOR", "FÁ SUSTENIDO MAIOR", "DÓ SUSTENIDO MAIOR"];
+                        const indice = Tonalidades.indexOf(correctValue);
+                        if (selected.value=="SI BEMOL") {
+                            correctValue = Tonalidades[indice+2]
+                            //correctValue = RespostaCorretaSiBemol();
+                        } else if (selected.value=="MI BEMOL") {
+                            correctValue = Tonalidades[indice+3]
+                            //alert(Tonalidades[indice+3])
+                            //alert(TonalidadeDoMaior.findIndex(correctValue))
+                            //correctValue = RespostaCorretaMiBemol();
+                        }
+                    }
+                }
+
                 if (currentHino[property]) {
+
                     if (correctValue != "Nao existe") {
                         const questionElement = createPropertyQuestion(property, correctValue);
                         propertyQuestionsElement.appendChild(questionElement);
                     }
                 }
             });
-            showAllDivs()
+            //showAllDivs()
         }
 
         // Event listener para o botão "Próximo Hino"
@@ -801,55 +866,80 @@
         startNewHino();
         updateStats();
 
-        function showAllDivs() {
-            // Get all div elements on the page
-            const paragraphs = document.querySelectorAll("button");
-            //alert(paragraphs.length)
-            for (let i = 0; i < paragraphs.length; i++) {
+        function RespostaCorretaSiBemol() {
 
-            switch (paragraphs[i].innerText) {
-            case "4/4":
-                paragraphs[i].innerText = "Quaternário Simples";
-                break;
-            case "3/4":
-                paragraphs[i].innerText = "Ternário Simples";
-                break;
-            case "6/4":
-                paragraphs[i].innerText = "Binário Composto";
-                break;
-            case "6/8":
-                paragraphs[i].innerText = "Binário Composto";
-                break;
-            case "12/8":
-                paragraphs[i].innerText = "Quaternário Composto";
-                break;
-            case "F":
-                paragraphs[i].innerText = "FÁ Maior";
-                break;
-            case "E♭":
-                paragraphs[i].innerText = "MI BEMOL Maior";
-                break;
-            case "C":
-                paragraphs[i].innerText = "DÓ Maior";
-                break;
-            case "A":
-                paragraphs[i].innerText = "LÁ Maior";
-                break;
-            case "G":
-                paragraphs[i].innerText = "SOL Maior";
-                break;
-            case "B♭":
-                paragraphs[i].innerText = "SI BEMOL Maior";
-                break;
-            case "A♭":
-                paragraphs[i].innerText = "LÁ BEMOL Maior";
-                break;
-            }                
-
+            switch (correctValue) {
+                case "RÉ BEMOL MAIOR":
+                    correctValue = "MI BEMOL MAIOR";
+                    break;
+                case "LÁ BEMOL MAIOR":
+                    correctValue = "SI BEMOL MAIOR";
+                    break;
+                case "MI BEMOL MAIOR":
+                    correctValue = "FÁ MAIOR";
+                    break;
+                case "SI BEMOL MAIOR":
+                    correctValue = "DÓ MAIOR";
+                    break;
+                case "FÁ MAIOR":
+                    correctValue = "SOL MAIOR";
+                    break;
+                case "DÓ MAIOR":
+                    correctValue = "RÉ MAIOR";
+                    break;
+                case "SOL MAIOR":
+                    correctValue = "LÁ MAIOR";
+                    break;
+                case "RÉ MAIOR":
+                    correctValue = "MI MAIOR";
+                    break;
+                case "LÁ MAIOR":
+                    correctValue = "SI MAIOR";
+                    break;
+                case "MI MAIOR":
+                    correctValue = "FÁ SUSTENIDO MAIOR";
+                    break;
             }
-        }            
+            return(correctValue)
+        }
+
+        function RespostaCorretaMiBemol() {
+            switch (correctValue) {
+                case "RÉ BEMOL MAIOR":
+                    correctValue = "SI BEMOL MAIOR";
+                    break;
+                case "LÁ BEMOL MAIOR":
+                    correctValue = "FÁ MAIOR";
+                    break;
+                case "MI BEMOL MAIOR":
+                    correctValue = "DÓ MAIOR";
+                    break;
+                case "SI BEMOL MAIOR":
+                    correctValue = "SOL MAIOR";
+                    break;
+                case "FÁ MAIOR":
+                    correctValue = "RÉ MAIOR";
+                    break;
+                case "DÓ MAIOR":
+                    correctValue = "LÁ MAIOR";
+                    break;
+                case "SOL MAIOR":
+                    correctValue = "MI MAIOR";
+                    break;
+                case "RÉ MAIOR":
+                    correctValue = "SI MAIOR";
+                    break;
+                case "LÁ MAIOR":
+                    correctValue = "FÁ SUSTENIDO MAIOR";
+                    break;
+                case "MI MAIOR":
+                    correctValue = "DÓ SUSTENIDO MAIOR";
+                    break;
+            }
+            return(correctValue)
+        }
 
 
-    </script>
+</script>
 </body>
 </html>
