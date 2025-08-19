@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Instrumentos Musicais</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input[type="number"] {
+            width: 60px;
+            padding: 5px;
+        }
+        button {
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        #salvarBtn {
+            background-color: #4CAF50;
+        }
+        #whatsappBtn {
+            background-color: #25D366;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .total-row {
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Controle de Instrumentos Musicais</h1>
+    
+    <table id="instrumentosTable">
+        <thead>
+            <tr>
+                <th>Instrumento</th>
+                <th>Quantidade</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Linhas dos instrumentos serão geradas pelo JavaScript -->
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>Banco</td>
+                <td><input type="number" id="banco" min="0" value="0"></td>
+            </tr>
+            <tr class="total-row">
+                <td>Total de Instrumentos</td>
+                <td id="totalInstrumentos">0</td>
+            </tr>
+        </tfoot>
+    </table>
+    
+    <div class="button-container">
+        <button id="salvarBtn">Salvar</button>
+        <button id="whatsappBtn">Enviar por WhatsApp</button>
+    </div>
+
+    <script>
+        // Lista de instrumentos
+        const instrumentos = [
+            "Violino",
+            "Violoncelo",
+            "Flauta",
+            "Clarinete",
+            "Clarone",
+            "Sax Reto",
+            "Sax Alto",
+            "Sax Barítono",
+            "Trompete",
+            "Trombonito",
+            "Trombone",
+            "Eufônio",
+            "Tuba"
+        ];
+
+        // Referências DOM
+        const tbody = document.querySelector("#instrumentosTable tbody");
+        const totalInstrumentosCell = document.getElementById("totalInstrumentos");
+        const salvarBtn = document.getElementById("salvarBtn");
+        const whatsappBtn = document.getElementById("whatsappBtn");
+
+        // Criar linhas da tabela para cada instrumento
+        instrumentos.forEach(instrumento => {
+            const row = document.createElement("tr");
+            
+            const cellInstrumento = document.createElement("td");
+            cellInstrumento.textContent = instrumento;
+            
+            const cellQuantidade = document.createElement("td");
+            const input = document.createElement("input");
+            input.type = "number";
+            input.min = "0";
+            input.value = "0";
+            input.id = instrumento.toLowerCase().replace(/\s/g, '-');
+            input.className = "quantidade";
+            input.addEventListener("input", calcularTotal);
+            
+            cellQuantidade.appendChild(input);
+            row.appendChild(cellInstrumento);
+            row.appendChild(cellQuantidade);
+            
+            tbody.appendChild(row);
+        });
+
+        // Função para calcular o total de instrumentos
+        function calcularTotal() {
+            let total = 0;
+            const inputs = document.querySelectorAll(".quantidade");
+            
+            inputs.forEach(input => {
+                total += parseInt(input.value) || 0;
+            });
+            
+            totalInstrumentosCell.textContent = total;
+        }
+
+        // Função para gerar o conteúdo do relatório
+        function gerarConteudo() {
+            const dataAtual = new Date();
+            const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
+            const horaFormatada = dataAtual.toLocaleTimeString('pt-BR');
+            
+            let conteudo = `*Controle de Instrumentos Musicais*\n`;
+            conteudo += `Data: ${dataFormatada} ${horaFormatada}\n\n`;
+            conteudo += `*Quantidade de Instrumentos:*\n`;
+            
+            // Adicionar instrumentos ao conteúdo
+            instrumentos.forEach(instrumento => {
+                const inputId = instrumento.toLowerCase().replace(/\s/g, '-');
+                const quantidade = document.getElementById(inputId).value;
+                if (parseInt(quantidade) > 0) {
+                    conteudo += `➤ ${instrumento}: ${quantidade}\n`;
+                }
+            });
+            
+            // Adicionar banco e total
+            const banco = document.getElementById("banco").value;
+            const total = totalInstrumentosCell.textContent;
+            
+            conteudo += `\n*Bancos utilizados:* ${banco}\n`;
+            conteudo += `*Total de Instrumentos:* ${total}\n`;
+            
+            return conteudo;
+        }
+
+        // Função para salvar os dados
+        function salvarDados() {
+            const conteudo = gerarConteudo();
+            
+            // Criar blob e link para download
+            const blob = new Blob([conteudo], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `instrumentos_${new Date().getTime()}.txt`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+        }
+
+        // Função para compartilhar via WhatsApp
+        function compartilharWhatsApp() {
+            const conteudo = gerarConteudo();
+            const texto = encodeURIComponent(conteudo);
+            const url = `https://wa.me/?text=${texto}`;
+            window.open(url, '_blank');
+        }
+
+        // Event listeners
+        salvarBtn.addEventListener("click", salvarDados);
+        whatsappBtn.addEventListener("click", compartilharWhatsApp);
+
+        // Calcular total inicial
+        calcularTotal();
+    </script>
+</body>
+</html>
