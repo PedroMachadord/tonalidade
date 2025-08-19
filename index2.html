@@ -32,6 +32,10 @@
             width: 70px;
             padding: 5px;
         }
+        input[type="text"] {
+            padding: 5px;
+            width: 150px;
+        }
         button {
             color: white;
             padding: 10px 15px;
@@ -47,6 +51,9 @@
         #whatsappBtn {
             background-color: #25D366;
         }
+        #adicionarBtn {
+            background-color: #2196F3;
+        }
         button:hover {
             opacity: 0.9;
         }
@@ -58,6 +65,11 @@
             display: flex;
             justify-content: center;
             margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .novo-instrumento-row {
+            background-color: #fffde7;
         }
     </style>
 </head>
@@ -75,6 +87,27 @@
             <!-- Linhas dos instrumentos serão geradas pelo JavaScript -->
         </tbody>
         <tfoot>
+            <tr class="novo-instrumento-row">
+                <td>
+                    <input type="text" id="novoInstrumento" placeholder="Digite um novo instrumento">
+                </td>
+                <td>
+                    <select id="quantidadeNovoInstrumento" class="quantidade">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                    <button id="adicionarBtn" style="margin-left: 10px;">Adicionar</button>
+                </td>
+            </tr>
             <tr>
                 <td>Banco</td>
                 <td>
@@ -123,11 +156,17 @@
             "Tuba"
         ];
 
+        // Array para armazenar instrumentos adicionados pelo usuário
+        let instrumentosAdicionados = [];
+
         // Referências DOM
         const tbody = document.querySelector("#instrumentosTable tbody");
         const totalInstrumentosCell = document.getElementById("totalInstrumentos");
         const salvarBtn = document.getElementById("salvarBtn");
         const whatsappBtn = document.getElementById("whatsappBtn");
+        const adicionarBtn = document.getElementById("adicionarBtn");
+        const novoInstrumentoInput = document.getElementById("novoInstrumento");
+        const quantidadeNovoInstrumento = document.getElementById("quantidadeNovoInstrumento");
 
         // Função para criar options de 0 a 10
         function criarOptions(selectElement) {
@@ -139,8 +178,8 @@
             }
         }
 
-        // Criar linhas da tabela para cada instrumento
-        instrumentos.forEach(instrumento => {
+        // Função para criar uma linha na tabela para um instrumento
+        function criarLinhaInstrumento(instrumento, quantidade = 0) {
             const row = document.createElement("tr");
             
             const cellInstrumento = document.createElement("td");
@@ -148,16 +187,23 @@
             
             const cellQuantidade = document.createElement("td");
             const select = document.createElement("select");
-            select.id = instrumento.toLowerCase().replace(/\s/g, '-');
             select.className = "quantidade";
+            select.dataset.instrumento = instrumento;
             select.addEventListener("change", calcularTotal);
             
             criarOptions(select);
+            select.value = quantidade;
+            
             cellQuantidade.appendChild(select);
             row.appendChild(cellInstrumento);
             row.appendChild(cellQuantidade);
             
-            tbody.appendChild(row);
+            return row;
+        }
+
+        // Inicializar tabela com instrumentos padrão
+        instrumentos.forEach(instrumento => {
+            tbody.appendChild(criarLinhaInstrumento(instrumento));
         });
 
         // Função para calcular o total de instrumentos
@@ -167,12 +213,44 @@
             
             selects.forEach(select => {
                 // Não incluir bancos no total
-                if (select.id !== "banco") {
+                if (select.id !== "banco" && select.id !== "quantidadeNovoInstrumento") {
                     total += parseInt(select.value) || 0;
                 }
             });
             
             totalInstrumentosCell.textContent = total;
+        }
+
+        // Função para adicionar novo instrumento
+        function adicionarInstrumento() {
+            const nomeInstrumento = novoInstrumentoInput.value.trim();
+            const quantidade = quantidadeNovoInstrumento.value;
+            
+            if (nomeInstrumento === "") {
+                alert("Por favor, digite o nome do instrumento");
+                return;
+            }
+            
+            // Verificar se o instrumento já existe
+            const todosInstrumentos = [...instrumentos, ...instrumentosAdicionados];
+            if (todosInstrumentos.includes(nomeInstrumento)) {
+                alert("Este instrumento já está na lista!");
+                return;
+            }
+            
+            // Adicionar à lista de instrumentos adicionados
+            instrumentosAdicionados.push(nomeInstrumento);
+            
+            // Criar nova linha na tabela (antes da linha de novo instrumento)
+            const novaLinha = criarLinhaInstrumento(nomeInstrumento, quantidade);
+            tbody.insertBefore(novaLinha, tbody.lastElementChild);
+            
+            // Limpar campos
+            novoInstrumentoInput.value = "";
+            quantidadeNovoInstrumento.value = "0";
+            
+            // Recalcular total
+            calcularTotal();
         }
 
         // Função para gerar o conteúdo do relatório
@@ -185,11 +263,19 @@
             conteudo += `Data: ${dataFormatada} ${horaFormatada}\n\n`;
             conteudo += `*Quantidade de Instrumentos:*\n`;
             
-            // Adicionar instrumentos ao conteúdo
+            // Adicionar instrumentos padrão ao conteúdo
             instrumentos.forEach(instrumento => {
-                const selectId = instrumento.toLowerCase().replace(/\s/g, '-');
-                const select = document.getElementById(selectId);
-                const quantidade = select.value;
+                const select = document.querySelector(`select[data-instrumento="${instrumento}"]`);
+                const quantidade = select ? select.value : "0";
+                if (parseInt(quantidade) > 0) {
+                    conteudo += `➤ ${instrumento}: ${quantidade}\n`;
+                }
+            });
+            
+            // Adicionar instrumentos customizados ao conteúdo
+            instrumentosAdicionados.forEach(instrumento => {
+                const select = document.querySelector(`select[data-instrumento="${instrumento}"]`);
+                const quantidade = select ? select.value : "0";
                 if (parseInt(quantidade) > 0) {
                     conteudo += `➤ ${instrumento}: ${quantidade}\n`;
                 }
@@ -231,6 +317,12 @@
         // Event listeners
         salvarBtn.addEventListener("click", salvarDados);
         whatsappBtn.addEventListener("click", compartilharWhatsApp);
+        adicionarBtn.addEventListener("click", adicionarInstrumento);
+        novoInstrumentoInput.addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                adicionarInstrumento();
+            }
+        });
 
         // Calcular total inicial
         calcularTotal();
