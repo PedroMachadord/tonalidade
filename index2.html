@@ -3,97 +3,482 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Instrumentos Musicais</title>
+    <title>Controle de Instrumentos por Naipes</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            font-size: 1.5em;
-            text-align: center;
+            background-color: #f5f7fa;
             color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 3px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        select {
-            width: 70px;
-            padding: 5px;
-        }
-        input[type="text"] {
-            padding: 5px;
-            width: 150px;
-        }
-        button {
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .naipes-section, .add-instrumento {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .naipe {
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .naipe-header {
+            background-color: #f0f4ff;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             cursor: pointer;
-            font-size: 16px;
-            margin-right: 10px;
+            border-bottom: 1px solid #e0e0e0;
         }
-        #salvarBtn {
-            background-color: #4CAF50;
+        
+        .naipe-header h3 {
+            margin: 0;
+            color: #2c3e50;
         }
-        #whatsappBtn {
-            background-color: #25D366;
+        
+        .toggle-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
         }
-        #adicionarBtn {
-            background-color: #2196F3;
+        
+        .naipe-content {
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
-        button:hover {
-            opacity: 0.9;
+        
+        .instrumento {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed #e0e0e0;
         }
-        .total-row {
-            font-weight: bold;
+        
+        .instrumento:last-child {
+            border-bottom: none;
+        }
+        
+        select {
+            padding: 8px;
+            border: 1px solid #d0d0d0;
+            border-radius: 5px;
+            width: 70px;
             background-color: #f9f9f9;
         }
-        .button-container {
+        
+        .totals {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4fc;
+            border-radius: 8px;
+        }
+        
+        .totals div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .total-geral {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            border-top: 2px solid #a0c4ff;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        
+        .buttons {
             display: flex;
             justify-content: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
+            margin-top: 30px;
         }
-        .novo-instrumento-row {
-            background-color: #fffde7;
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        #salvarBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        #whatsappBtn {
+            background-color: #25D366;
+            color: white;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .add-instrumento h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input, select.naipe-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 5px;
+        }
+        
+        #adicionarBtn {
+            background-color: #2196F3;
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .collapsed .toggle-icon {
+            transform: rotate(180deg);
+        }
+        
+        .collapsed .naipe-content {
+            display: none;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
-    <h1>Controle de Instrumentos Musicais</h1>
+    <header>
+        <h1>Controle de Instrumentos Musicais</h1>
+        <p>Organizados por naipes - Selecione as quantidades</p>
+    </header>
     
-    <table id="instrumentosTable">
-        <thead>
-            <tr>
-                <th>Instrumento</th>
-                <th>Quantidade</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Linhas dos instrumentos serão geradas pelo JavaScript -->
-        </tbody>
-        <tfoot>
-            <tr class="novo-instrumento-row">
-                <td>
-                    <input type="text" id="novoInstrumento" placeholder="Digite um novo instrumento">
-                </td>
-                <td>
-                    <select id="quantidadeNovoInstrumento" class="quantidade">
+    <div class="container">
+        <div class="naipes-section">
+            <!-- Cordas -->
+            <div class="naipe">
+                <div class="naipe-header">
+                    <h3>Cordas</h3>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="naipe-content">
+                    <div class="instrumento">
+                        <span>Violino</span>
+                        <select class="quantidade">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                    <div class="instrumento">
+                        <span>Violoncelo</span>
+                        <select class="quantidade">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Madeiras -->
+            <div class="naipe">
+                <div class="naipe-header">
+                    <h3>Madeiras</h3>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="naipe-content">
+                    <div class="instrumento">
+                        <span>Flauta</span>
+                        <select class="quantidade">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                    <div class="instrumento">
+                        <span>Clarinete</span>
+                        <select class="quantidade">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                    <div class="instrumento">
+                        <span>Clarone</span>
+                        <select class="quantidade">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sax -->
+            <div class="naipe">
+                <div class="naipe-header">
+                    <h3>Sax</h3>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="naipe-content">
+                    <div class="instrumento">
+                        <span>Sax Reto</span>
+                        <select class="quantidade">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                    <div class="instrumento">
+                        <span>Sax Alto</span>
+                        <select class="quantidade">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                    <div class="instrumento">
+                        <span>Sax Barítono</span>
+                        <select class="quantidade">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Metais -->
+            <div class="naipe">
+                <div class="naipe-header">
+                    <h3>Metais</h3>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="naipe-content">
+                    <div class="instrumento">
+                        <span>Trompete</span>
+                        <select class="quantidade">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                    <div class="instrumento">
+                        <span>Trombonito</span>
+                        <select class="quantidade">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                    <div class="instrumento">
+                        <span>Trombone</span>
+                        <select class="quantidade">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                    <div class="instrumento">
+                        <span>Eufônio</span>
+                        <select class="quantidade">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                    <div class="instrumento">
+                        <span>Tuba</span>
+                        <select class="quantidade">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Totais -->
+            <div class="totals">
+                <div>
+                    <span>Total de Instrumentos:</span>
+                    <span id="totalInstrumentos">0</span>
+                </div>
+                <div>
+                    <span>Bancos Utilizados:</span>
+                    <select id="banco">
                         <option value="0">0</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
@@ -106,227 +491,228 @@
                         <option value="9">9</option>
                         <option value="10">10</option>
                     </select>
-                    <button id="adicionarBtn" style="margin-left: 10px;">Adicionar</button>
-                </td>
-            </tr>
-            <tr>
-                <td>Banco</td>
-                <td>
-                    <select id="banco" class="quantidade">
-                        <option value="0">0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                    </select>
-                </td>
-            </tr>
-            <tr class="total-row">
-                <td>Total de Instrumentos</td>
-                <td id="totalInstrumentos">0</td>
-            </tr>
-        </tfoot>
-    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="add-instrumento">
+            <h2>Adicionar Novo Instrumento</h2>
+            <div class="form-group">
+                <label for="novoInstrumento">Nome do Instrumento:</label>
+                <input type="text" id="novoInstrumento" placeholder="Ex: Violão, Oboé, etc.">
+            </div>
+            <div class="form-group">
+                <label for="naipeSelect">Naipe:</label>
+                <select id="naipeSelect" class="naipe-select">
+                    <option value="Cordas">Cordas</option>
+                    <option value="Madeiras">Madeiras</option>
+                    <option value="Sax">Sax</option>
+                    <option value="Metais">Metais</option>
+                    <option value="Outros">Outros</option>
+                </select>
+            </div>
+            <button id="adicionarBtn">Adicionar Instrumento</button>
+            
+            <div class="custom-instruments">
+                <!-- Aqui serão adicionados os instrumentos personalizados -->
+            </div>
+        </div>
+    </div>
     
-    <div class="button-container">
-        <button id="salvarBtn">Salvar</button>
+    <div class="buttons">
+        <button id="salvarBtn">Salvar Dados</button>
         <button id="whatsappBtn">Enviar por WhatsApp</button>
     </div>
+    
+    <footer>
+        <p>Sistema de controle de instrumentos - Desenvolvido para organização de naipes musicais</p>
+    </footer>
 
     <script>
-        // Lista de instrumentos
-        const instrumentos = [
-            "Violino",
-            "Violoncelo",
-            "Flauta",
-            "Clarinete",
-            "Clarone",
-            "Sax Reto",
-            "Sax Alto",
-            "Sax Barítono",
-            "Trompete",
-            "Trombonito",
-            "Trombone",
-            "Eufônio",
-            "Tuba"
-        ];
-
-        // Array para armazenar instrumentos adicionados pelo usuário
-        let instrumentosAdicionados = [];
-
-        // Referências DOM
-        const tbody = document.querySelector("#instrumentosTable tbody");
-        const totalInstrumentosCell = document.getElementById("totalInstrumentos");
-        const salvarBtn = document.getElementById("salvarBtn");
-        const whatsappBtn = document.getElementById("whatsappBtn");
-        const adicionarBtn = document.getElementById("adicionarBtn");
-        const novoInstrumentoInput = document.getElementById("novoInstrumento");
-        const quantidadeNovoInstrumento = document.getElementById("quantidadeNovoInstrumento");
-
-        // Função para criar options de 0 a 10
-        function criarOptions(selectElement) {
-            for (let i = 0; i <= 10; i++) {
-                const option = document.createElement("option");
-                option.value = i;
-                option.textContent = i;
-                selectElement.appendChild(option);
-            }
-        }
-
-        // Função para criar uma linha na tabela para um instrumento
-        function criarLinhaInstrumento(instrumento, quantidade = 0) {
-            const row = document.createElement("tr");
-            
-            const cellInstrumento = document.createElement("td");
-            cellInstrumento.textContent = instrumento;
-            
-            const cellQuantidade = document.createElement("td");
-            const select = document.createElement("select");
-            select.className = "quantidade";
-            select.dataset.instrumento = instrumento;
-            select.addEventListener("change", calcularTotal);
-            
-            criarOptions(select);
-            select.value = quantidade;
-            
-            cellQuantidade.appendChild(select);
-            row.appendChild(cellInstrumento);
-            row.appendChild(cellQuantidade);
-            
-            return row;
-        }
-
-        // Inicializar tabela com instrumentos padrão
-        instrumentos.forEach(instrumento => {
-            tbody.appendChild(criarLinhaInstrumento(instrumento));
-        });
-
-        // Função para calcular o total de instrumentos
-        function calcularTotal() {
-            let total = 0;
-            const selects = document.querySelectorAll(".quantidade");
-            
-            selects.forEach(select => {
-                // Não incluir bancos no total
-                if (select.id !== "banco" && select.id !== "quantidadeNovoInstrumento") {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Função para calcular o total de instrumentos
+            function calcularTotal() {
+                let total = 0;
+                const selects = document.querySelectorAll('.quantidade');
+                
+                selects.forEach(select => {
                     total += parseInt(select.value) || 0;
-                }
+                });
+                
+                document.getElementById('totalInstrumentos').textContent = total;
+            }
+            
+            // Adicionar event listeners para os selects
+            const selects = document.querySelectorAll('.quantidade, #banco');
+            selects.forEach(select => {
+                select.addEventListener('change', calcularTotal);
             });
             
-            totalInstrumentosCell.textContent = total;
-        }
-
-        // Função para adicionar novo instrumento
-        function adicionarInstrumento() {
-            const nomeInstrumento = novoInstrumentoInput.value.trim();
-            const quantidade = quantidadeNovoInstrumento.value;
-            
-            if (nomeInstrumento === "") {
-                alert("Por favor, digite o nome do instrumento");
-                return;
-            }
-            
-            // Verificar se o instrumento já existe
-            const todosInstrumentos = [...instrumentos, ...instrumentosAdicionados];
-            if (todosInstrumentos.includes(nomeInstrumento)) {
-                alert("Este instrumento já está na lista!");
-                return;
-            }
-            
-            // Adicionar à lista de instrumentos adicionados
-            instrumentosAdicionados.push(nomeInstrumento);
-            
-            // Criar nova linha na tabela (antes da linha de novo instrumento)
-            const novaLinha = criarLinhaInstrumento(nomeInstrumento, quantidade);
-            tbody.insertBefore(novaLinha, tbody.lastElementChild);
-            
-            // Limpar campos
-            novoInstrumentoInput.value = "";
-            quantidadeNovoInstrumento.value = "0";
-            
-            // Recalcular total
+            // Calcular total inicial
             calcularTotal();
-        }
-
-        // Função para gerar o conteúdo do relatório
-        function gerarConteudo() {
-            const dataAtual = new Date();
-            const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
-            const horaFormatada = dataAtual.toLocaleTimeString('pt-BR');
             
-            let conteudo = `*Controle de Instrumentos Musicais*\n`;
-            conteudo += `Data: ${dataFormatada} ${horaFormatada}\n\n`;
-            conteudo += `*Quantidade de Instrumentos:*\n`;
+            // Funcionalidade para expandir/recolher naipes
+            const naipeHeaders = document.querySelectorAll('.naipe-header');
+            naipeHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('collapsed');
+                });
+            });
             
-            // Adicionar instrumentos padrão ao conteúdo
-            instrumentos.forEach(instrumento => {
-                const select = document.querySelector(`select[data-instrumento="${instrumento}"]`);
-                const quantidade = select ? select.value : "0";
-                if (parseInt(quantidade) > 0) {
-                    conteudo += `➤ ${instrumento}: ${quantidade}\n`;
+            // Adicionar novo instrumento
+            document.getElementById('adicionarBtn').addEventListener('click', function() {
+                const nomeInstrumento = document.getElementById('novoInstrumento').value.trim();
+                const naipe = document.getElementById('naipeSelect').value;
+                
+                if (nomeInstrumento === '') {
+                    alert('Por favor, digite o nome do instrumento.');
+                    return;
+                }
+                
+                // Encontrar o naipe correspondente
+                let naipeElement = null;
+                document.querySelectorAll('.naipe').forEach(n => {
+                    if (n.querySelector('h3').textContent === naipe) {
+                        naipeElement = n;
+                    }
+                });
+                
+                // Se o naipe não existir, criar um novo (para o caso de "Outros")
+                if (!naipeElement && naipe === 'Outros') {
+                    const naipesSection = document.querySelector('.naipes-section');
+                    
+                    const novoNaipe = document.createElement('div');
+                    novoNaipe.className = 'naipe';
+                    novoNaipe.innerHTML = `
+                        <div class="naipe-header">
+                            <h3>Outros</h3>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="naipe-content"></div>
+                    `;
+                    
+                    // Adicionar funcionalidade de toggle
+                    novoNaipe.querySelector('.naipe-header').addEventListener('click', function() {
+                        this.parentElement.classList.toggle('collapsed');
+                    });
+                    
+                    naipesSection.insertBefore(novoNaipe, document.querySelector('.totals'));
+                    naipeElement = novoNaipe;
+                }
+                
+                if (naipeElement) {
+                    const naipeContent = naipeElement.querySelector('.naipe-content');
+                    
+                    // Criar novo elemento de instrumento
+                    const novoInstrumento = document.createElement('div');
+                    novoInstrumento.className = 'instrumento';
+                    novoInstrumento.innerHTML = `
+                        <span>${nomeInstrumento}</span>
+                        <select class="quantidade">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    `;
+                    
+                    // Adicionar event listener para o novo select
+                    novoInstrumento.querySelector('select').addEventListener('change', calcularTotal);
+                    
+                    naipeContent.appendChild(novoInstrumento);
+                    
+                    // Limpar o campo de entrada
+                    document.getElementById('novoInstrumento').value = '';
                 }
             });
             
-            // Adicionar instrumentos customizados ao conteúdo
-            instrumentosAdicionados.forEach(instrumento => {
-                const select = document.querySelector(`select[data-instrumento="${instrumento}"]`);
-                const quantidade = select ? select.value : "0";
-                if (parseInt(quantidade) > 0) {
-                    conteudo += `➤ ${instrumento}: ${quantidade}\n`;
-                }
+            // Função para salvar os dados
+            document.getElementById('salvarBtn').addEventListener('click', function() {
+                const dataAtual = new Date();
+                const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
+                const horaFormatada = dataAtual.toLocaleTimeString('pt-BR');
+                
+                let conteudo = `Controle de Instrumentos Musicais\n`;
+                conteudo += `Data: ${dataFormatada} ${horaFormatada}\n\n`;
+                
+                // Coletar dados dos instrumentos por naipe
+                const naipes = document.querySelectorAll('.naipe');
+                naipes.forEach(naipe => {
+                    const nomeNaipe = naipe.querySelector('h3').textContent;
+                    conteudo += `=== ${nomeNaipe} ===\n`;
+                    
+                    const instrumentos = naipe.querySelectorAll('.instrumento');
+                    instrumentos.forEach(instrumento => {
+                        const nome = instrumento.querySelector('span').textContent;
+                        const quantidade = instrumento.querySelector('select').value;
+                        conteudo += `${nome}: ${quantidade}\n`;
+                    });
+                    
+                    conteudo += '\n';
+                });
+                
+                // Adicionar bancos
+                const bancos = document.getElementById('banco').value;
+                const total = document.getElementById('totalInstrumentos').textContent;
+                conteudo += `Bancos utilizados: ${bancos}\n`;
+                conteudo += `Total de instrumentos: ${total}\n`;
+                
+                // Criar blob e link para download
+                const blob = new Blob([conteudo], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `instrumentos_${dataAtual.getFullYear()}${(dataAtual.getMonth()+1).toString().padStart(2, '0')}${dataAtual.getDate().toString().padStart(2, '0')}.txt`;
+                a.click();
+                
+                URL.revokeObjectURL(url);
             });
             
-            // Adicionar banco e total
-            const banco = document.getElementById("banco").value;
-            const total = totalInstrumentosCell.textContent;
-            
-            conteudo += `\n*Bancos utilizados:* ${banco}\n`;
-            conteudo += `*Total de Instrumentos:* ${total}\n`;
-            
-            return conteudo;
-        }
-
-        // Função para salvar os dados
-        function salvarDados() {
-            const conteudo = gerarConteudo();
-            
-            // Criar blob e link para download
-            const blob = new Blob([conteudo], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `instrumentos_${new Date().getTime()}.txt`;
-            a.click();
-            
-            URL.revokeObjectURL(url);
-        }
-
-        // Função para compartilhar via WhatsApp
-        function compartilharWhatsApp() {
-            const conteudo = gerarConteudo();
-            const texto = encodeURIComponent(conteudo);
-            const url = `https://wa.me/?text=${texto}`;
-            window.open(url, '_blank');
-        }
-
-        // Event listeners
-        salvarBtn.addEventListener("click", salvarDados);
-        whatsappBtn.addEventListener("click", compartilharWhatsApp);
-        adicionarBtn.addEventListener("click", adicionarInstrumento);
-        novoInstrumentoInput.addEventListener("keypress", function(e) {
-            if (e.key === "Enter") {
-                adicionarInstrumento();
-            }
+            // Função para compartilhar via WhatsApp
+            document.getElementById('whatsappBtn').addEventListener('click', function() {
+                const dataAtual = new Date();
+                const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
+                const horaFormatada = dataAtual.toLocaleTimeString('pt-BR');
+                
+                let conteudo = `*Controle de Instrumentos Musicais*\n`;
+                conteudo += `Data: ${dataFormatada} ${horaFormatada}\n\n`;
+                
+                // Coletar dados dos instrumentos por naipe
+                const naipes = document.querySelectorAll('.naipe');
+                naipes.forEach(naipe => {
+                    const nomeNaipe = naipe.querySelector('h3').textContent;
+                    conteudo += `*${nomeNaipe}*\n`;
+                    
+                    const instrumentos = naipe.querySelectorAll('.instrumento');
+                    instrumentos.forEach(instrumento => {
+                        const nome = instrumento.querySelector('span').textContent;
+                        const quantidade = instrumento.querySelector('select').value;
+                        if (parseInt(quantidade) > 0) {
+                            conteudo += `➤ ${nome}: ${quantidade}\n`;
+                        }
+                    });
+                    
+                    conteudo += '\n';
+                });
+                
+                // Adicionar bancos e total
+                const bancos = document.getElementById('banco').value;
+                const total = document.getElementById('totalInstrumentos').textContent;
+                conteudo += `*Bancos utilizados:* ${bancos}\n`;
+                conteudo += `*Total de instrumentos:* ${total}\n`;
+                
+                // Codificar para URL
+                const texto = encodeURIComponent(conteudo);
+                window.open(`https://wa.me/?text=${texto}`, '_blank');
+            });
         });
-
-        // Calcular total inicial
-        calcularTotal();
     </script>
 </body>
 </html>
