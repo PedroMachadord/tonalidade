@@ -3,26 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz de Hinos CCB (Propriedades Básicas)</title>
+    <title>Hinos CCB - Teoria Musical</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
             background-color: #f5f5f5;
+            display: flex;
+            min-height: 100vh;
         }
+        
+        /* Menu Lateral Compacto */
+        .sidebar {
+            width: 200px;
+            background: linear-gradient(to bottom, #2c3e50, #3498db);
+            color: white;
+            padding: 15px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .sidebar-header h2 {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+        
+        .config-group {
+            margin-bottom: 15px;
+        }
+        
+        .config-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        .config-group select, .config-group input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .config-group input {
+            margin-bottom: 8px;
+        }
+        
+        .confirm-btn {
+            width: 100%;
+            padding: 8px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .confirm-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+        
+        /* Conteúdo Principal */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
         .container {
             background-color: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
         }
+        
         h1 {
             color: #2c3e50;
             text-align: center;
             margin-bottom: 30px;
         }
+        
         .question-container {
             margin-bottom: 30px;
             padding: 15px;
@@ -30,17 +119,20 @@
             border-radius: 8px;
             border-left: 4px solid #3498db;
         }
+        
         .question {
             font-size: 1.2em;
             font-weight: bold;
             margin-bottom: 15px;
             color: #34495e;
         }
+        
         .options {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
+        
         .option-btn {
             padding: 10px;
             font-size: 1em;
@@ -51,21 +143,25 @@
             transition: all 0.3s;
             text-align: left;
         }
+        
         .option-btn:hover {
             background-color: #d6eaf8;
             transform: translateY(-2px);
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+        
         .correct {
             background-color: #d4edda;
             border-color: #c3e6cb;
             color: #155724;
         }
+        
         .incorrect {
             background-color: #f8d7da;
             border-color: #f5c6cb;
             color: #721c24;
         }
+        
         .result {
             margin-top: 10px;
             padding: 10px;
@@ -73,6 +169,7 @@
             font-weight: bold;
             display: none;
         }
+        
         .next-btn {
             padding: 12px;
             font-size: 1.1em;
@@ -85,9 +182,11 @@
             width: 100%;
             transition: background-color 0.3s;
         }
+        
         .next-btn:hover {
             background-color: #2980b9;
         }
+        
         .stats {
             margin-top: 20px;
             padding: 12px;
@@ -96,18 +195,21 @@
             font-size: 1.1em;
             border: 1px solid #d1e7f0;
         }
+        
         .progress-container {
             margin-top: 20px;
             background-color: #ecf0f1;
             border-radius: 5px;
             padding: 10px;
         }
+        
         .progress-bar {
             height: 20px;
             background-color: #3498db;
             border-radius: 3px;
             transition: width 0.5s;
         }
+        
         .property-name {
             font-weight: bold;
             color: #2980b9;
@@ -116,24 +218,7 @@
             align-items: center;
             gap: 8px;
         }
-        .hinario-section {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: #f0f8ff;
-            border-radius: 8px;
-        }
-        .hinario-options {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        .hinario-option {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
+        
         .help-icon {
             color: #3498db;
             cursor: pointer;
@@ -147,15 +232,17 @@
             justify-content: center;
             transition: all 0.3s;
         }
+        
         .help-icon:hover {
             background: #3498db;
             color: white;
         }
+        
         /* Modal de ajuda */
         .modal {
             display: none;
             position: fixed;
-            z-index: 1;
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
@@ -163,6 +250,7 @@
             overflow: auto;
             background-color: rgba(0,0,0,0.4);
         }
+        
         .modal-content {
             background-color: #fefefe;
             margin: 10% auto;
@@ -172,6 +260,7 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             line-height: 1.6;
         }
+        
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -180,41 +269,51 @@
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
         }
+        
         .modal-title {
             font-size: 1.3em;
             color: #2c3e50;
             font-weight: bold;
         }
+        
         .close {
             color: #aaa;
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
         }
+        
         .close:hover {
             color: black;
         }
+        
         .modal-body {
             margin-bottom: 15px;
         }
+        
         .modal-body h3 {
             color: #3498db;
             margin-top: 15px;
         }
+        
         .modal-body p {
             margin-bottom: 10px;
         }
+        
         .modal-body ul {
             padding-left: 20px;
         }
+        
         .modal-body li {
             margin-bottom: 5px;
         }
+        
         .modal-footer {
             text-align: right;
             border-top: 1px solid #eee;
             padding-top: 10px;
         }
+        
         .modal-ok-btn {
             padding: 8px 16px;
             background-color: #3498db;
@@ -223,49 +322,113 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        
         .modal-ok-btn:hover {
             background-color: #2980b9;
+        }
+        
+        /* Menu responsivo para mobile */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px;
+            z-index: 1001;
+            cursor: pointer;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 900px) {
+            .sidebar {
+                position: fixed;
+                left: -200px;
+                height: 100%;
+                z-index: 1000;
+                transition: left 0.3s;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .main-content {
+                padding: 60px 15px 15px 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Quiz de Propriedades Musicais - Hinos CCB</h1>
-        <div class="hinario-section">
-            <label>Hinário:</label>
-            <div class="hinario-options">
-                <div class="hinario-option">
-                    <input type="radio" id="do" name="hinario" value="DÓ" checked>
-                    <label for="do">Dó</label>
-                </div>
-                <div class="hinario-option">
-                    <input type="radio" id="si_bemol" name="hinario" value="SI BEMOL">
-                    <label for="si_bemol">Si Bemol</label>
-                </div>
-                <div class="hinario-option">
-                    <input type="radio" id="mi_bemol" name="hinario" value="MI BEMOL">
-                    <label for="mi_bemol">Mi Bemol</label>
-                </div>
-            </div>
-        </div>        
-        <div id="quiz-container">
-            <div class="question-container">
-                <div class="question" id="hino-number"></div>
-                
-                <div id="property-questions">
-                    <!-- Perguntas serão inseridas aqui -->
-                </div>
-                
-                <button id="next-btn" class="next-btn">Próximo Hino</button>
-            </div>
+    <!-- Botão para abrir/fechar menu em mobile -->
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
+    
+    <!-- Menu Lateral -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Hinos CCB</h2>
+            <p>Teoria Musical</p>
+        </div>
+        
+        <div class="config-group">
+            <label for="hinario">Hinário:</label>
+            <select id="hinario">
+                <option value="DÓ">Dó</option>
+                <option value="SI BEMOL">Si Bemol</option>
+                <option value="MI BEMOL">Mi Bemol</option>
+            </select>
+        </div>
+        
+        <div class="config-group">
+            <label for="modo">Modo de Estudo:</label>
+            <select id="modo">
+                <option value="aleatorio">Aleatório</option>
+                <option value="sequencial">Sequencial</option>
+            </select>
+        </div>
+        
+        <div class="config-group" id="hino-inicial-group">
+            <label for="hino-inicial">Hino Inicial (1-480):</label>
+            <input type="number" id="hino-inicial" min="1" max="480" value="1">
+            <button class="confirm-btn" id="confirmar-hino">Confirmar</button>
+        </div>
+        
+        <div class="sidebar-footer">
+            <p>Estude os hinos da CCB</p>
+        </div>
+    </div>
+    
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <div class="container">
+            <h1>Hinos CCB - Teoria Musical</h1>
             
-            <div class="stats" id="stats">
-                Perguntas: 0 | Acertos: 0 | Erros: 0
-            </div>
-            
-            <div class="progress-container">
-                <div>Progresso: <span id="progress">0</span>%</div>
-                <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+            <div id="quiz-container">
+                <div class="question-container">
+                    <div class="question" id="hino-number"></div>
+                    
+                    <div id="property-questions">
+                        <!-- Perguntas serão inseridas aqui -->
+                    </div>
+                    
+                    <button id="next-btn" class="next-btn">Próximo Hino</button>
+                </div>
+                
+                <div class="stats" id="stats">
+                    Perguntas: 0 | Acertos: 0 | Erros: 0
+                </div>
+                
+                <div class="progress-container">
+                    <div>Progresso: <span id="progress">0</span>%</div>
+                    <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -287,13 +450,16 @@
     </div>
 
     <script>
-        // Vetor menor com os dados dos hinos
+        // Dados dos hinos (exemplo com apenas alguns hinos)
         const hinosDB = [
             { "Hino": "1", "Tipo de Compasso": "Quaternário Simples", "Tonalidade": "MI BEMOL MAIOR", "Ritmo Inicial": "TÉTICO", "Unidade de Movimento": "Nao Existe", "Unidade de Tempo": "Seminima", "Unidade de Compasso": "Semibreve" },
             { "Hino": "2", "Tipo de Compasso": "Quaternário Simples", "Tonalidade": "MI BEMOL MAIOR", "Ritmo Inicial": "ANACRÚSICO", "Unidade de Movimento": "Nao Existe", "Unidade de Tempo": "Seminima", "Unidade de Compasso": "Semibreve" },
             { "Hino": "3", "Tipo de Compasso": "Quaternário Simples", "Tonalidade": "SOL MAIOR", "Ritmo Inicial": "TÉTICO", "Unidade de Movimento": "Nao Existe", "Unidade de Tempo": "Seminima", "Unidade de Compasso": "Semibreve" },
             { "Hino": "4", "Tipo de Compasso": "Binário Composto", "Tonalidade": "LÁ BEMOL MAIOR", "Ritmo Inicial": "TÉTICO", "Unidade de Movimento": "Seminima", "Unidade de Tempo": "Minima Pontuada", "Unidade de Compasso": "Semibreve Pontuada" },
             { "Hino": "5", "Tipo de Compasso": "Binário Composto", "Tonalidade": "LÁ BEMOL MAIOR", "Ritmo Inicial": "TÉTICO", "Unidade de Movimento": "Colcheia", "Unidade de Tempo": "Seminima Pontuada", "Unidade de Compasso": "Minima Pontuada" },
+            { "Hino": "6", "Tipo de Compasso": "Quaternário Simples", "Tonalidade": "SOL MAIOR", "Ritmo Inicial": "TÉTICO", "Unidade de Movimento": "Nao Existe", "Unidade de Tempo": "Seminima", "Unidade de Compasso": "Semibreve" },
+            { "Hino": "7", "Tipo de Compasso": "Binário Composto", "Tonalidade": "LÁ BEMOL MAIOR", "Ritmo Inicial": "TÉTICO", "Unidade de Movimento": "Seminima", "Unidade de Tempo": "Minima Pontuada", "Unidade de Compasso": "Semibreve Pontuada" },
+            { "Hino": "8", "Tipo de Compasso": "Binário Composto", "Tonalidade": "LÁ BEMOL MAIOR", "Ritmo Inicial": "TÉTICO", "Unidade de Movimento": "Colcheia", "Unidade de Tempo": "Seminima Pontuada", "Unidade de Compasso": "Minima Pontuada" },
             { "Hino": "6", "Tipo de Compasso": "Quaternário Simples", "Tonalidade": "DÓ MAIOR", "Ritmo Inicial": "ANACRÚSICO", "Unidade de Movimento": "Nao Existe", "Unidade de Tempo": "Seminima", "Unidade de Compasso": "Semibreve" },
             { "Hino": "7", "Tipo de Compasso": "Binário Composto", "Tonalidade": "MI BEMOL MAIOR", "Ritmo Inicial": "ANACRÚSICO", "Unidade de Movimento": "Seminima", "Unidade de Tempo": "Minima Pontuada", "Unidade de Compasso": "Semibreve Pontuada" },
             { "Hino": "8", "Tipo de Compasso": "Binário Composto", "Tonalidade": "SI BEMOL MAIOR", "Ritmo Inicial": "TÉTICO", "Unidade de Movimento": "Colcheia", "Unidade de Tempo": "Seminima Pontuada", "Unidade de Compasso": "Minima Pontuada" },
@@ -775,6 +941,7 @@
             { "Hino": "C4", "Tipo de Compasso": "Quaternário Simples", "Tonalidade": "LÁ BEMOL MAIOR", "Ritmo Inicial": "TÉTICO", "Unidade de Movimento": "Nao Existe", "Unidade de Tempo": "Seminima", "Unidade de Compasso": "Semibreve" },
             { "Hino": "C5", "Tipo de Compasso": "Quaternário Simples", "Tonalidade": "SI BEMOL MAIOR", "Ritmo Inicial": "ANACRÚSICO", "Unidade de Movimento": "Nao Existe", "Unidade de Tempo": "Seminima", "Unidade de Compasso": "Semibreve" },
             { "Hino": "C6", "Tipo de Compasso": "Quaternário Simples", "Tonalidade": "SOL MAIOR", "Ritmo Inicial": "TÉTICO", "Unidade de Movimento": "Nao Existe", "Unidade de Tempo": "Seminima", "Unidade de Compasso": "Semibreve" }
+
         ];
 
         // Elementos da página
@@ -784,6 +951,12 @@
         const statsElement = document.getElementById('stats');
         const progressElement = document.getElementById('progress');
         const progressBar = document.getElementById('progress-bar');
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const modoSelect = document.getElementById('modo');
+        const hinoInicialInput = document.getElementById('hino-inicial');
+        const confirmarHinoBtn = document.getElementById('confirmar-hino');
+        const hinoInicialGroup = document.getElementById('hino-inicial-group');
         
         // Elementos do modal
         const modal = document.getElementById('helpModal');
@@ -798,6 +971,8 @@
         let correctAnswers = 0;
         let wrongAnswers = 0;
         let correctValue = "aaa";
+        let currentHinoIndex = 1; // Inicia no hino 1
+        let modoEstudo = "aleatorio"; // Modo padrão: aleatório
         const propertiesToQuiz = ["Tipo de Compasso", "Tonalidade", "Ritmo Inicial", "Unidade de Movimento", "Unidade de Tempo", "Unidade de Compasso"];
 
         // Conteúdo de ajuda para cada propriedade
@@ -952,9 +1127,29 @@
             }
         }
 
+        // Toggle do menu em mobile
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+        });
+
+        // Fechar menu ao clicar fora (em mobile)
+        document.addEventListener('click', function(event) {
+            if (window.innerWidth <= 900 && 
+                !sidebar.contains(event.target) && 
+                event.target !== menuToggle &&
+                sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        });
+
         // Função para formatar o texto do hino
         function formatHinoText(hinoNumber) {
-            return `Hino ${hinoNumber}`;
+            if (hinoNumber <= 480) {
+                return `Hino ${hinoNumber}`;
+            } else {
+                hinoNumber = hinoNumber.replace("C", "")
+                return `Coro ${hinoNumber}`;
+            }
         }
 
         // Função para embaralhar array
@@ -979,10 +1174,10 @@
             };
 
             if (property=="Tonalidade") {
-                const selected = document.querySelector('input[name="hinario"]:checked');
-                if (selected.value=="SI BEMOL") {
+                const selected = document.getElementById('hinario').value;
+                if (selected=="SI BEMOL") {
                     possibleValues["Tonalidade"] = ["MI BEMOL MAIOR", "SI BEMOL MAIOR", "FÁ MAIOR", "DÓ MAIOR", "SOL MAIOR", "RÉ MAIOR", "LÁ MAIOR", "MI MAIOR", "SI MAIOR", "FÁ SUSTENIDO MAIOR"];
-                } else if (selected.value=="MI BEMOL") {
+                } else if (selected=="MI BEMOL") {
                     possibleValues["Tonalidade"] = ["SI BEMOL MAIOR", "FÁ MAIOR", "DÓ MAIOR", "SOL MAIOR", "RÉ MAIOR", "LÁ MAIOR", "MI MAIOR", "SI MAIOR", "DÓ SUSTENIDO MAIOR"];
                 }
             }
@@ -1091,11 +1286,32 @@
             progressBar.style.width = `${progress}%`;
         }
 
+        // Função para encontrar um hino pelo número
+        function encontrarHinoPorNumero(numero) {
+            var cnumero = numero
+            if (numero > 480) {
+                cnumero = "C" + (numero - 480)
+            }
+            return hinosDB.find(hino => hino.Hino === cnumero.toString());
+        }
+
         // Função para iniciar um novo hino
         function startNewHino() {
-            // Selecionar um hino aleatório
-            const randomIndex = Math.floor(Math.random() * hinosDB.length);
-            currentHino = hinosDB[randomIndex];
+            if (modoEstudo === "sequencial") {
+                // Modo sequencial: usar o hino atual e depois incrementar
+                currentHino = encontrarHinoPorNumero(currentHinoIndex);
+                //alert(currentHino)
+                
+                // Incrementar para o próximo hino, voltando ao início se necessário
+                currentHinoIndex++;
+                if (currentHinoIndex > 486) { // Como temos apenas 8 hinos no exemplo
+                    currentHinoIndex = 1;
+                }
+            } else {
+                // Modo aleatório: selecionar um hino aleatório
+                const randomIndex = Math.floor(Math.random() * hinosDB.length);
+                currentHino = hinosDB[randomIndex];
+            }
             
             // Mostrar o número do hino
             hinoNumberElement.textContent = formatHinoText(currentHino.Hino);
@@ -1104,26 +1320,22 @@
             propertyQuestionsElement.innerHTML = '';
             
             // Criar perguntas para cada propriedade
-            if (document.getElementById('hino-number').innerHTML.indexOf("Hino C") != -1) {
-                document.getElementById('hino-number').innerHTML = document.getElementById('hino-number').innerHTML.replace("Hino C", "Coro ")
-            }
             propertiesToQuiz.forEach(property => {
                 correctValue = currentHino[property];
                 if (property=="Tonalidade") {
-                    const selected = document.querySelector('input[name="hinario"]:checked');
-                    if (selected.value=="SI BEMOL" || selected.value=="MI BEMOL") {
+                    const selected = document.getElementById('hinario').value;
+                    if (selected=="SI BEMOL" || selected=="MI BEMOL") {
                         const Tonalidades  = ["RÉ BEMOL MAIOR", "LÁ BEMOL MAIOR", "MI BEMOL MAIOR", "SI BEMOL MAIOR", "FÁ MAIOR", "DÓ MAIOR", "SOL MAIOR", "RÉ MAIOR", "LÁ MAIOR", "MI MAIOR", "SI MAIOR", "FÁ SUSTENIDO MAIOR", "DÓ SUSTENIDO MAIOR"];
                         const indice = Tonalidades.indexOf(correctValue);
-                        if (selected.value=="SI BEMOL") {
+                        if (selected=="SI BEMOL") {
                             correctValue = Tonalidades[indice+2]
-                        } else if (selected.value=="MI BEMOL") {
+                        } else if (selected=="MI BEMOL") {
                             correctValue = Tonalidades[indice+3]
                         }
                     }
                 }
 
                 if (currentHino[property]) {
-
                     if (correctValue != "Nao existe") {
                         const questionElement = createPropertyQuestion(property, correctValue);
                         propertyQuestionsElement.appendChild(questionElement);
@@ -1134,6 +1346,38 @@
 
         // Event listener para o botão "Próximo Hino"
         nextButton.addEventListener('click', startNewHino);
+
+        // Event listener para mudança de modo de estudo
+        modoSelect.addEventListener('change', function() {
+            modoEstudo = this.value;
+            
+            // Mostrar/ocultar campo de hino inicial baseado no modo selecionado
+            if (modoEstudo === "sequencial") {
+                hinoInicialGroup.style.display = 'block';
+            } else {
+                hinoInicialGroup.style.display = 'none';
+            }
+            
+            startNewHino();
+        });
+
+        // Event listener para o botão confirmar hino inicial
+        confirmarHinoBtn.addEventListener('click', function() {
+            const hinoInicial = parseInt(hinoInicialInput.value);
+            
+            // Validar o valor do hino inicial
+            if (hinoInicial >= 1 && hinoInicial <= 480) {
+                currentHinoIndex = hinoInicial;
+                startNewHino();
+            } else {
+                alert("Por favor, insira um número de hino válido entre 1 e 480.");
+                hinoInicialInput.value = 1;
+                currentHinoIndex = 1;
+            }
+        });
+
+        // Event listener para mudança de hinário
+        document.getElementById('hinario').addEventListener('change', startNewHino);
 
         // Iniciar o quiz
         startNewHino();
